@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+   <body>
+   
+      <h3>Administrator - Update Data Interface</h3>
+      <hr/>
+      
+      {%- for category, message in get_flashed_messages(with_categories = true) %}
+         <div class = "alert alert-danger">
+            {{ message }}
+         </div>
+      {%- endfor %}
+      
+      <form action = "{{ request.path }}" method = "post">
+         <label for = "Date">Date</label><br>
+         <input type = "text" name = "Date" placeholder = "Date" /><br>
+         <label for = "Region">Region</label><br>
+         <input type = "text" name = "Region" placeholder = "Region" /><br>
+         <label for = "Cure">Cure</label><br>
+         <input type = "text" name = "Cure" placeholder = "Cure" /><br>
+         <label for = "Confirm">Confirm</label><br>
+         <input type = "text" name = "Confirm" placeholder = "Confirm" /><br>
+         <label for = "Import">Import</label><br>
+         <input type = "text" name = "Import" placeholder = "Import" /><br>
+         <label for = "Mortality">Mortality</label><br>
+         <input type = "text" name = "Mortality" placeholder = "Mortality" /><br>
+         <input type = "submit" value = "Submit" />
+      </form>
+      
+   </body>
+</html>
