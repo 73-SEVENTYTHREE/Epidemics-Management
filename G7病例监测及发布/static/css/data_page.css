@@ -1,0 +1,49 @@
+.jumbotron {
+    padding: 1rem 1rem 1rem 1rem;
+    margin-bottom: 2rem;
+    background-color: #ffffff;
+    /*#FFF5EE;*/
+    border-radius: 0.3rem;
+}
+
+.jumbotron-carousel {
+    /* padding: 1rem 1rem 1rem 1rem; */
+    margin-bottom: 2rem;
+    background-color: #ffffff;
+    /*#FFF5EE;*/
+    border-radius: 0.3rem;
+}
+
+.bodycss {
+    background-color: #ffffff;
+}
+
+.bg-toggler {
+    background-color: #99CCCC;
+}
+
+.DispalyLabel {
+    font-size: 40px;
+    color: bisque;
+}
+
+.DisplayNum {
+    font-size: 30px;
+    color: black;
+}
+
+.DisplayBox {
+    border-bottom: blueviolet;
+    border-right: blueviolet;
+    border-left: blueviolet;
+    border-top: blueviolet;
+    border-radius: 2rem;
+    padding: 1rem;
+}
+
+.jumbotronImg {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    height: auto;
+}

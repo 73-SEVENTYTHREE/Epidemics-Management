@@ -1,7 +1,8 @@
 body {
     background: #ffffff;
     color: #333333;
-    margin-top: 5rem;
+    margin: 0;
+    padding: 0;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -30,26 +31,4 @@ body {
  }
  .shadow{
   box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
-}
-.jumbotron{
-  padding: 1rem 1rem 1rem 1rem;
-  margin-bottom: 2rem;
-  background-color: #ffffff;/*#FFF5EE;*/
-  border-radius: 0.3rem;
-}
-.jumbotron-carousel{
-  /* padding: 1rem 1rem 1rem 1rem; */
-  margin-bottom: 2rem;
-  background-color: #ffffff;/*#FFF5EE;*/
-  border-radius: 0.3rem;
-}
-.carousel{
-  
-}
-
-.bodycss {
-    background-color: #ffffff;
-}
-.bg-toggler{
-  background-color: #99CCCC;
 }
