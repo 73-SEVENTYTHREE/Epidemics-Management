@@ -39,7 +39,10 @@ class Record(db.Model):
         self.Confirm = Confirm
         self.Import = Import
         self.Mortality = Mortality
-        
+if __name__ == '__main__':
+        db.drop_all()
+        db.create_all()
+
 @app.route('/')
 def show_all():
    return render_template('show_all.html',Record = Record.query.all() )
@@ -55,6 +58,17 @@ def new():
          
          db.session.add(Record)
          db.session.commit()
+         
+         r1.Cure = Region.query(func.sum(Record.Cure)).filter(Record.Region==Region.Name).scalar()
+         r1.Confirm = Region.query(func.sum(Record.Confirm)).filter(Record.Region==Region.Name).scalar()
+         r1.Import = Region.query(func.sum(Record.Import)).filter(Record.Region==Region.Name).scalar()
+         r1.Mortality = Region.query(func.sum(Record.Mortality)).filter(Record.Region==Region.Name).scalar()
+         
+         db.session.add(r1)
+         db.session.commit()
+         
          flash('Record was successfully added')
          return redirect(url_for('show_all'))
    return render_template('new.html')
+
+app.run(debug=True)
