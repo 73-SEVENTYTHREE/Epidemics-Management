@@ -1,5 +1,5 @@
 body {
-    background: #ffffff;
+    background: transparent;
     color: #333333;
     margin: 0;
     padding: 0;
@@ -17,6 +17,7 @@ body {
   
   .site-header .navbar-nav .nav-link {
     color:whitesmoke;
+    
   }
   
   .site-header .navbar-nav .nav-link:hover {

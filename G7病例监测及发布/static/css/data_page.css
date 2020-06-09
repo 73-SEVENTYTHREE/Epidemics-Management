@@ -1,7 +1,7 @@
 .jumbotron {
     padding: 1rem 1rem 1rem 1rem;
     margin-bottom: 2rem;
-    background-color: #ffffff;
+    background-color: transparent !important;
     /*#FFF5EE;*/
     border-radius: 0.3rem;
 }
@@ -9,13 +9,26 @@
 .jumbotron-carousel {
     /* padding: 1rem 1rem 1rem 1rem; */
     margin-bottom: 2rem;
-    background-color: #ffffff;
+    /* background-color: #ffffff; */
     /*#FFF5EE;*/
     border-radius: 0.3rem;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .bodycss {
-    background-color: #ffffff;
+    background-color: transparent !important;
+    background-image: url("../img/black_back.jpg");
+    background-position: center 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    -moz-background-size: cover;
+    -ms-background-size: cover;
 }
 
 .bg-toggler {
@@ -25,12 +38,16 @@
 .DispalyLabel {
     font-size: 40px;
     color: bisque;
+    font-family: '华文细黑';
 }
 
 .DisplayNum {
     font-size: 30px;
     color: black;
-}
+    font-family: FZShuTi;
+
+} 
+
 
 .DisplayBox {
     border-bottom: blueviolet;
@@ -46,4 +63,17 @@
     padding: 0;
     max-width: 100%;
     height: auto;
+    position: fixed;
 }
+
+.region_label{
+    padding:1 rem;
+    margin: 1 rem;
+    font-size: 20px;
+    color: #DC143C;
+    font-family: Microsoft YaHei;
+}
+
+.shadow-sm{
+    box-shadow: 0 0.25rem 0.25rem rgba(0,0,0,0.075) !important;
+  }
