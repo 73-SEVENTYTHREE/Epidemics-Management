@@ -3,43 +3,33 @@
 <!-- This part is the body of the website. Just simply replace the follwoing comments with your own codes. Attentnion: no <body> </body> part is needed-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
 <script src="{{ url_for('static', filename='js/bootstrap-datepicker.js') }}"></script>
-<!--
-这里我要说一个故事
-从前，有一个人，用了bootstrap-datepicker.js
-然后他发现，这个控件的位置抽了
-而且原因是bootstrap的导航栏
-他非常无奈
-所以最后用了邪法
-而且还硬编码在了这个js里面
-待好心人把它改的正常一点
-因为这玩意实在太吐血了、、、
-恐龙哭泣.gif
--->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.zh-CN.min.js" charset="UTF-8"></script>
 <div class="container">
 	<div class="row clearfix">
 		<div class="col-md-12 column">
-			<form role="form">
+			<div style="height: 80px">&nbsp;</div> <!--防止因为header修改导致的整体偏移-->
+			<form role="form" method="post">
 				<div class="input-append date form-group" id="datepick" data-date-format="dd-mm-yyyy">
-					<label for="exampleDatePicker">Time</label>
-					<input id="exampleDatePicker" class="form-control" type="text" data-provide="datepicker">
+					<label for="Date">日期</label>
+					<input name="Date" class="form-control" type="text" data-provide="datepicker">
 				</div>    
 				<div class="form-group">
-					 <label for="exampleInputEmail1">Email address</label><input type="email" class="form-control" id="exampleInputEmail1" />
+					 <label for="Confirm">确诊人数</label><input type="number" class="form-control" name="Confirm" />
 				</div>
 				<div class="form-group">
-					 <label for="exampleInputPassword1">Password</label><input type="password" class="form-control" id="exampleInputPassword1" />
+					 <label for="Import">境外输入人数</label><input type="number" class="form-control" name="Import" />
 				</div>
 				<div class="form-group">
-                    <label for="exampleInputPassword2">Password</label><input type="password" class="form-control" id="exampleInputPassword2" />
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword3">Password</label><input type="password" class="form-control" id="exampleInputPassword3" />
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword4">Password</label><input type="password" class="form-control" id="exampleInputPassword4" />
+					 <label for="temp">无症感染人数</label><input type="number" class="form-control" name="temp" />
 				</div>
-				<button type="submit" class="btn btn-default">Submit</button>
+				<div class="form-group">
+					 <label for="Cure">治愈人数</label><input type="number" class="form-control" name="Cure" />
+				</div>
+				<div class="form-group">
+					 <label for="Mortality">死亡人数</label><input type="number" class="form-control" name="Mortality" />
+				</div>
+				<button type="submit" class="btn btn-default">提交数据</button>
 			</form>
 		</div>
 	</div>
