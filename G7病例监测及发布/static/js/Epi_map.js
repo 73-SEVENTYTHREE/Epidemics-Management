@@ -148,9 +148,4 @@ ec_center.on('click', function (param) {
 })
 
 
-    //格式
-    // provinceGather=[{
-    // proName：xxx，dayListing:[{date:'xx', imported:xxx},{},{},{}]
-    //},{},{},{}……]]
-
 
