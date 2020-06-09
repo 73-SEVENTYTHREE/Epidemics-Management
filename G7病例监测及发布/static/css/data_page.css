@@ -1,4 +1,6 @@
 .jumbotron {
+    /* padding: 1rem 1rem 1rem 1rem; */
+    margin-bottom:auto;
     background-color: transparent !important;
     /*#FFF5EE;*/
     border-radius: 0.3rem;
@@ -65,6 +67,8 @@
 }
 
 .region_label{
+    padding-bottom: 3rem;
+    /* margin: 1 rem; */
     font-size: 20px;
     color: #DC143C;
     font-family: Microsoft YaHei;
