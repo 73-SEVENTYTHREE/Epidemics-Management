@@ -16,6 +16,7 @@ var ec_center_option = {
     tooltip: {
         trigger: 'item'
     },
+    backgroundColor:'transparent',
     //左侧小导航图标
     visualMap: {
         show: true,
@@ -78,11 +79,13 @@ var ec_center_option = {
     }]
 };
 ec_center.setOption(ec_center_option);
+// document.getElementById('Epi_map').css.style.backgroundColor='transparent';
 //实现点击按钮切换地图类型
 $("#changeMap").click(function () {
     if (choice == dummy_data) {
         choice = dummy_data2;
         $("#changeMap").html('切换累积确诊地图');
+
     }
     else {
         choice = dummy_data;
@@ -98,6 +101,7 @@ $("#changeMap").click(function () {
 
 //实现点击疫情地图上的省市板块就将对应数据加到趋势图中：
 ec_center.on('click', function (param) {
+    $("#Region_Name").html("当前地区: "+param['name']);
     var region = param['name'];
     var found = 0;
     for (var index=0;index<optionContrast.series.length;index++) {
