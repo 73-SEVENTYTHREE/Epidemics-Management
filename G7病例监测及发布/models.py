@@ -6,10 +6,8 @@ bp = Blueprint('update', __name__, url_prefix='update')
 bp.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Yang654321@127.0.0.1/test'
 db = SQLAlchemy(bp)
 
-
-
 class Record(db.Model):
-    _tablename_ = 'records'
+    __tablename__ = 'records'
     Date = db.Column(db.Date, primary_key = True)
     Region = db.Column(db.String(64), primary_key = True)
     Cure = db.Column(db.Integer)
@@ -32,11 +30,11 @@ def show_all():
 @bp.route('/new', methods = ['GET', 'POST'])
 def new():
    if request.method == 'POST':
-      if not request.form['Date']  or not request.form['Cure'] or not request.form['Confirm'] or not request.form['Import'] or not request.form['Mortality']:
+      if not request.form['Date']  or not request.form['Cure'] or not request.form['Confirm'] or not request.form['Import'] or not request.form['Asymptomatic'] or not request.form['Mortality']:
          flash('Please enter all the fields', 'error')
       else:
          Record = Record(request.form['Date'], request.form['Cure'],request.form['Confirm'],
-                         request.form['Import'], request.form['Mortality'])
+                         request.form['Import'], request.form['Asymptomatic'], request.form['Mortality'])
          
          db.session.add(Record)
          db.session.commit()
@@ -44,6 +42,7 @@ def new():
          flash('Record was successfully added')
          return redirect(url_for('show_all'))
    return render_template('new.html')
+   
 if __name__ == '__main__':
     bp.run()
     bp.run(debug=True)
