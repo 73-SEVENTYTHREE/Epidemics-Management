@@ -17,7 +17,7 @@ var data = [{
         asymptomatic: 20, cured: 10, dead: 2
     },
     {
-        date: "03-03", diagnosed: 80, imported: 11,
+        date: "03-03", diagnosed: 80, imported: 2,
         asymptomatic: 17, cured: 15, dead: 0
     }]
 },
@@ -39,11 +39,11 @@ var data = [{
 {
     province: "湖北",
     data: [{
-        date: "03-01", diagnosed: 70, imported: 3,
+        date: "03-01", diagnosed: 70, imported: 6,
         asymptomatic: 12, cured: 13, dead: 1
     },
     {
-        date: "03-02", diagnosed: 30, imported: 2,
+        date: "03-02", diagnosed: 30, imported: 30,
         asymptomatic: 32, cured: 43, dead: 0
     },
     {
@@ -185,7 +185,7 @@ function calcTargetData() {
     // 显示目标地区累计确诊、死亡、治愈趋势图
     var optionTC2 = {
         title: {
-            text: '地区累计确诊、死亡、治愈趋势图'
+            text: '各地累计确诊、死亡、治愈趋势图'
         },
         tooltip: {
             formatter: function (params) {
@@ -222,7 +222,7 @@ function calcTargetData() {
     // 显示目标地区每日新增确诊趋势图
     var optionTC3 = {
         title: {
-            text: '地区新增确诊趋势图'
+            text: '各地每日新增确诊对比图'
         },
         tooltip: {
             formatter: function (params) {
@@ -298,7 +298,7 @@ for (const index in provinceGather) {
 
 optionContrast = {
     title: {
-        text: '地区每日境外输入趋势图'
+        text: '每日境外输入趋势图'
     },
     tooltip: {
         trigger: 'axis'
