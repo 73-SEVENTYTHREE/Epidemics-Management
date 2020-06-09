@@ -10,7 +10,7 @@
 
 		<div class="col-md-12 column">
 			<div style="height: 80px">&nbsp;</div> <!--防止因为header修改导致的整体偏移-->
-			<div class="alert alert-info">欢迎登陆后台，{{g.province}}省的管理员{{session['name']}}！</div>
+			<div class="alert alert-info">欢迎登陆后台，{{session["province"]}}省的管理员{{session['name']}}！</div>
 			<!--后端请将管理员的省份传到g.province!!!!!-->
 			<form role="form" method="post" id="adminForm">
 				<div class="input-append date form-group" id="datepick" data-date-format="dd-mm-yyyy">
@@ -24,7 +24,7 @@
 					 <label for="Import">境外输入人数</label><input type="number" class="form-control" id="Import" name="Import" min="0" />
 				</div>
 				<div class="form-group">
-					 <label for="temp">无症感染人数</label><input type="number" class="form-control" id="temp" min="0" />
+					 <label for="temp">无症感染人数</label><input type="number" class="form-control" id="Asymptomatic" name="Asymptomatic" min="0" />
 				</div>
 				<div class="form-group">
 					 <label for="Cure">治愈人数</label><input type="number" class="form-control" id="Cure" name="Cure" min="0" />
