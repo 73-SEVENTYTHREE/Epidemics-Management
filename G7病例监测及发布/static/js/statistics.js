@@ -121,7 +121,7 @@ var optionTC1 = {
         },
         textStyle: {
             align: 'left'
-        }
+        },
     },
     legend: {
         x: "left",
@@ -131,7 +131,7 @@ var optionTC1 = {
         }
     },
     xAxis: { type: 'category' },
-    yAxis: {},
+    yAxis: {type: 'value'},
     series: [
         { type: "line" },
         { type: "line" }
@@ -142,9 +142,10 @@ var optionTC1 = {
     }
 };
 
+
 // 使用刚指定的配置项和数据显示图表。
 trendChart1.setOption(optionTC1);
-
+console.log(nationwideRateData);
 // 计算各省累计、新增数据并显示图表。之所以单独作为函数是因为这一块可能会被反复调用，因此以重复遍历为代价增强复用性。
 function calcTargetData() {
     // 计算目标地区新增数据
@@ -301,18 +302,15 @@ optionContrast = {
         text: '每日境外输入趋势图'
     },
     tooltip: {
-        trigger: 'axis'
+        trigger: 'axis',
+        textStyle: {
+            align: 'left'
+        },
     },
     legend: {
         data: contrastLegend,
         x:"left",
         y:"bottom"
-    },
-    grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
     },
     xAxis: {
         type: 'category',
@@ -331,30 +329,33 @@ contrast.setOption(optionContrast);
 // 当画面大小变化时对应改变各图表的尺寸。
 function resizeCharts() {
     $("#trendNationWide").css({
-        "height": 0.6 * $("#trendNationWideDiv").width(),
+        "height": 0.5 * $("#trendNationWideDiv").width(),
         "width": $("#trendNationWideDiv").width()
     });
     trendChart1.resize();
     $("#trendTotal").css({
-        "height": 0.6 * $("#trendTotalDiv").width(),
+        "height": 0.5 * $("#trendTotalDiv").width(),
         "width": $("#trendTotalDiv").width()
     });
     trendChart2.resize();
     $("#trendDaily").css({
-        "height": 0.6 * $("#trendDailyDiv").width(),
+        "height": 0.5 * $("#trendDailyDiv").width(),
         "width": $("#trendDailyDiv").width()
     });
     trendChart3.resize();
     $("#contrastGraph").css({
-        "height": 0.6 * $("#contrastWrapper").width(),
+        "height": 0.5 * $("#contrastWrapper").width(),
         "width": $("#contrastWrapper").width()
-
     })
     contrast.resize();
+    $("#Epi_map").css({
+        "height": 3 * $("#contrastWrapper").height(),
+    })
+    ec_center.resize();
+        $("#Epi_map").css({
+        "height": 3 * $("#contrastWrapper").height(),
+    })
 }
-
-
-
 
 // 不要忘记设置图表的初始大小。
 $(document).ready(function () {

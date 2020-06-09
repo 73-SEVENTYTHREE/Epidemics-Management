@@ -79,6 +79,7 @@ var ec_center_option = {
     }]
 };
 ec_center.setOption(ec_center_option);
+
 // document.getElementById('Epi_map').css.style.backgroundColor='transparent';
 //实现点击按钮切换地图类型
 $("#changeMap").click(function () {
@@ -157,6 +158,7 @@ ec_center.on('click', function (param) {
             }
             optionContrast.legend.data.pop();
             contrast.clear();
+            contrast=echarts.init(document.getElementById('contrastGraph'));
             break;
         }
     }
@@ -176,8 +178,6 @@ ec_center.on('click', function (param) {
         }
 
     }
-
-        contrast=echarts.init(document.getElementById('contrastGraph'));
         contrast.setOption(optionContrast);
 
     //格式
