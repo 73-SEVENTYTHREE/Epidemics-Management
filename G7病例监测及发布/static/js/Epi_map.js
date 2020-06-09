@@ -88,6 +88,9 @@ $("#changeMap").click(function () {
         choice = dummy_data;
         $("#changeMap").html('切换现存确诊地图')
     }
+	// 重新设置地区
+	targetProvince = "全国";
+	calcTargetData();
     ec_center.setOption({
         series: [{
             data: choice
@@ -100,6 +103,43 @@ $("#changeMap").click(function () {
 ec_center.on('click', function (param) {
     var region = param['name'];
     var found = 0;
+	// 点击的省份与目前展示省份数据相同时，展示全国数据
+	if (region == targetProvince)
+	{
+		targetProvince = "全国";
+		for (updatedProvince of choice)
+		{
+			delete updatedProvince.itemStyle;
+		}
+	}
+	else
+	{
+		targetProvince = region;
+		for (updatedProvince of choice)
+		{
+			if (updatedProvince.name != region)
+			{
+				delete updatedProvince.itemStyle;
+			}
+			else
+			{
+				updatedProvince.itemStyle = {
+					normal: {
+						borderColor: "#f70",
+						borderWidth: 3,
+					}
+				}
+			}
+		}
+	}
+	console.log(choice);
+    ec_center.setOption({
+        series: [{
+            data: choice
+        }]
+    })
+	// 重新加载各趋势图和数据
+	calcTargetData();
     for (var index=0;index<optionContrast.series.length;index++) {
         //点击了已经在图上的省市，将之从折线图里面删去。需要删除legend以及series里对应地区的部分
         if (region == optionContrast.series[index].name) {
