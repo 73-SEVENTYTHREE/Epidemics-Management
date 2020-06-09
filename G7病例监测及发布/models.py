@@ -6,19 +6,7 @@ bp = Blueprint('update', __name__, url_prefix='update')
 bp.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Yang654321@127.0.0.1/test'
 db = SQLAlchemy(bp)
 
-class Area(db.Model):
-    _tablename_ = 'areas'
-    Region = db.Column(db.String(64), primary_key = True)
-    Cure = db.Column(db.Integer, default =  db.session.query(func.sum(Record.Cure)).filter(Record.Region==Area.Region).scalar())
-    Comfirm = db.Column(db.Integer, default =  db.session.query(func.sum(Record.Comfirm)).filter(Record.Region==Area.Region).scalar())
-    Import = db.Column(db.Integer, default =  db.session.query(func.sum(Record.Import)).filter(Record.Region==Area.Region).scalar())
-    Asymptomatic = db.Column(db.Integer, default =  db.session.query(func.sum(Record.Asymptomatic)).filter(Record.Region==Area.Region).scalar())
-    Mortality = db.Column(db.Integer, default =  db.session.query(func.sum(Record.Mortality)).filter(Record.Region==Area.Region).scalar())
-    
-    records = db.relationship('Record', backref='area')
 
-    def __repr__(self);
-        return '<Area %r>' % self.Region
 
 class Record(db.Model):
     _tablename_ = 'records'
@@ -29,7 +17,6 @@ class Record(db.Model):
     Import = db.Column(db.Integer)
     Asymptomatic = db.Column(db.Interger)
     Mortality = db.Column(db.Integer)
-    area_Region = db.Column(db.String(64), db.ForeignKey('areas.Region'))
 
     def __repr__(self);
         return '<Record %r>' % self.Record  
