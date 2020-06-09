@@ -3,52 +3,36 @@
 <!-- This part is the body of the website. Just simply replace the follwoing comments with your own codes. Attentnion: no <body> </body> part is needed-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
 <script src="{{ url_for('static', filename='js/bootstrap-datepicker.js') }}"></script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-
-<!--
-这里我要说一个故事
-从前，有一个人，用了bootstrap-datepicker.js
-然后他发现，这个控件的位置抽了
-而且原因是bootstrap的导航栏
-他非常无奈
-所以最后用了邪法
-而且还硬编码在了这个js里面
-待好心人把它改的正常一点
-因为这玩意实在太吐血了、、、
-恐龙哭泣.gif
--->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.zh-CN.min.js" charset="UTF-8"></script>
+<script src="{{ url_for('static', filename='js/jquery.validate.min.js') }}"></script>
 <div class="container">
 	<div class="row clearfix">
 
 		<div class="col-md-12 column">
-			<form role="form">
+			<div style="height: 80px">&nbsp;</div> <!--防止因为header修改导致的整体偏移-->
+			<div class="alert alert-info">欢迎登陆后台，{{g.province}}省的管理员{{session['name']}}！</div>
+			<!--后端请将管理员的省份传到g.province!!!!!-->
+			<form role="form" method="post" id="adminForm">
 				<div class="input-append date form-group" id="datepick" data-date-format="dd-mm-yyyy">
-					<label for="exampleDatePicker">Time</label>
-					<label for="exampleDatePicker">选择更新的日期</label>
-					<input id="exampleDatePicker" class="form-control" type="text" data-provide="datepicker">
+					<label for="Date">日期</label>
+					<input name="Date" id="Date" class="form-control" type="text" data-provide="datepicker">
 				</div>    
 				<div class="form-group">
-					 <label for="exampleInputEmail1">Email address</label><input type="email" class="form-control" id="exampleInputEmail1" />
-					 <label for="exampleInputEmail1">当日新增确诊人数</label><input type="email" class="form-control" id="exampleInputEmail1" />
+					 <label for="Confirm">确诊人数</label><input type="number" class="form-control" id="Confirm" name="Confirm" min="0" />
 				</div>
 				<div class="form-group">
-					 <label for="exampleInputPassword1">当日新增治愈人数</label><input type="password" class="form-control" id="exampleInputPassword1" />
+					 <label for="Import">境外输入人数</label><input type="number" class="form-control" id="Import" name="Import" min="0" />
 				</div>
 				<div class="form-group">
-                    <label for="exampleInputPassword2">Password</label><input type="password" class="form-control" id="exampleInputPassword2" />
-                    <label for="exampleInputPassword2">当日新增死亡人数</label><input type="password" class="form-control" id="exampleInputPassword2" />
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword3">Password</label><input type="password" class="form-control" id="exampleInputPassword3" />
-                    <label for="exampleInputPassword3">当日新增境外输入人数</label><input type="password" class="form-control" id="exampleInputPassword3" />
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword4">Password</label><input type="password" class="form-control" id="exampleInputPassword4" />
+					 <label for="temp">无症感染人数</label><input type="number" class="form-control" id="temp" min="0" />
 				</div>
-
-				<button type="submit" class="btn btn-default">Submit</button>
+				<div class="form-group">
+					 <label for="Cure">治愈人数</label><input type="number" class="form-control" id="Cure" name="Cure" min="0" />
+				</div>
+				<div class="form-group">
+					 <label for="Mortality">死亡人数</label><input type="number" class="form-control" id="Mortality" name="Mortality" min="0" />
+				</div>
+				<button type="submit" class="btn btn-default">提交数据</button>
 			</form>
 		</div>
 	</div>
@@ -64,5 +48,71 @@
 		language: "zh-CN",
 		orientation: "bottom auto"
 	});
+	
+	// 在前端检查输入的有效性，若无效输入会进行提示。
+	$(document).ready(function (){
+		jQuery.validator.addMethod('dateCheck', function() {
+			date = $("#Date").val();
+			today = new Date();
+			return (Date.parse(date) < today.getTime());
+		})
+		
+		$("#adminForm").validate({
+			rules: {
+				Date: {
+					required: true,
+					dateISO: true,
+					dateCheck: true,
+				},
+				Confirm: {
+					required: true,
+					number: true,
+					min: 0,
+				},
+				Import: {
+					required: true,
+					number: true,
+					min: 0,
+				},
+				Cure: {
+					required: true,
+					number: true,
+					min: 0,
+				},
+				Mortality: {
+					required: true,
+					number: true,
+					min: 0,
+				},
+			},
+			messages: {
+				Date: {
+					required: "请输入日期",
+					dateISO: "请输入正确的日期格式",
+					dateCheck: "请输入有效的日期",
+				},
+				Confirm: {
+					required: "请输入确诊人数",
+					number: "请输入数字",
+					min: "请输入有效的数字",
+				},
+				Import: {
+					required: "请输入境外输入人数",
+					number: "请输入数字",
+					min: "请输入有效的数字",
+				},
+				Cure: {
+					required: "请输入治愈人数",
+					number: "请输入数字",
+					min: "请输入有效的数字",
+				},
+				Mortality: {
+					required: "请输入死亡人数",
+					number: "请输入数字",
+					min: "请输入有效的数字",
+				},
+			}
+		})
+	})
 </script>
 {% endblock content %}

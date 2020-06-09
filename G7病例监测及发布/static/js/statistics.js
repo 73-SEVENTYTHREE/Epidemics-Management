@@ -168,8 +168,8 @@ function calcTargetData() {
                     toModifiedData.dead += dateData.dead;
                 }
             }
+        	firstProvince = 0;
         }
-        firstProvince = 0;
     }
     // 计算目标地区累计确诊、死亡、治愈
     var totalDiagnosed = 0, totalCured = 0, totalDead = 0;
