@@ -132,7 +132,7 @@ ec_center.on('click', function (param) {
 			}
 		}
 	}
-	console.log(choice);
+	
     ec_center.setOption({
         series: [{
             data: choice
