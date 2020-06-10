@@ -100,9 +100,7 @@ $("#changeMap").click(function () {
         $("#changeMap").html('切换现存确诊地图');
         diagnosed='累积确诊人数';
     }
-	// 重新设置地区
-	targetProvince = "全国";
-	calcTargetData();
+	highlightSelected()
     ec_center.setOption({
         series: [{
             data: choice,
@@ -140,23 +138,7 @@ ec_center.on('click', function (param) {
 	else
 	{
 		targetProvince = region;
-
-		for (updatedProvince of choice)
-		{
-			if (updatedProvince.name != region)
-			{
-				delete updatedProvince.itemStyle;
-			}
-			else
-			{
-				updatedProvince.itemStyle = {
-					normal: {
-						borderColor: "#f70",
-						borderWidth: 3,
-					}
-				}
-			}
-		}
+		highlightSelected()
         $("#Region_Name").html("当前地区: "+param['name']);
 	}
 	
@@ -165,8 +147,6 @@ ec_center.on('click', function (param) {
             data: choice
         }]
     })
-	// 重新加载各趋势图和数据
-	calcTargetData();
     for (var index=0;index<optionContrast.series.length;index++) {
         //点击了已经在图上的省市，将之从折线图里面删去。需要删除legend以及series里对应地区的部分
         if (region == optionContrast.series[index].name) {
@@ -209,5 +189,18 @@ ec_center.on('click', function (param) {
 
 })
 
-
+function highlightSelected() { // 对选中的省份进行高亮
+	for (updatedProvince of choice) {
+		if (updatedProvince.name != targetProvince) {
+			delete updatedProvince.itemStyle;
+		} else {
+			updatedProvince.itemStyle = {
+				normal: {
+					borderColor: "#f70",
+					borderWidth: 3,
+				}
+			}
+		}
+	}
+}
 
