@@ -27,8 +27,8 @@ if __name__ == '__main__':
 def show_all():
    return render_template('show_all.html',Record = Record.query.all() )
 
-@bp.route('/new', methods = ['GET', 'POST'])
-def new():
+@bp.route('/admin', methods = ['GET', 'POST'])
+def admin():
    if request.method == 'POST':
       if not request.form['Date']  or not request.form['Cure'] or not request.form['Confirm'] or not request.form['Import'] or not request.form['Asymptomatic'] or not request.form['Mortality']:
          flash('Please enter all the fields', 'error')
@@ -40,8 +40,8 @@ def new():
          db.session.commit()
          
          flash('Record was successfully added')
-         return redirect(url_for('show_all'))
-   return render_template('new.html')
+         return redirect(url_for('data page'))
+   return render_template('admin.html')
    
 if __name__ == '__main__':
     bp.run()
