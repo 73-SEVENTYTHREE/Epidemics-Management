@@ -124,6 +124,7 @@ var optionTC1 = {
         },
     },
     legend: {
+		selectedMode: false,
         x: "left",
         y: "bottom",
         formatter: function (params) {
@@ -145,7 +146,6 @@ var optionTC1 = {
 
 // 使用刚指定的配置项和数据显示图表。
 trendChart1.setOption(optionTC1);
-console.log(nationwideRateData);
 // 计算各省累计、新增数据并显示图表。之所以单独作为函数是因为这一块可能会被反复调用，因此以重复遍历为代价增强复用性。
 function calcTargetData() {
     // 计算目标地区新增数据
@@ -199,6 +199,7 @@ var optionTC2 = {
             }
         },
         legend: {
+			selectedMode: false,
             x: "left",
             y: "bottom",
             formatter: function (params) {
@@ -235,6 +236,7 @@ var optionTC3 = {
             }
         },
         legend: {
+			selectedMode: false,
             x: "left",
             y: "bottom",
             formatter: function (params) {
@@ -306,6 +308,7 @@ optionContrast = {
         },
     },
     legend: {
+		selectedMode: false,
         data: contrastLegend,
         x:"left",
         y:"bottom"

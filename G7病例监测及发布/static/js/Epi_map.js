@@ -22,10 +22,14 @@ var ec_center_option = {
         show: true,
         x: 'left',
         y: 'bottom',
+		selectedMode: 'multiple',
         textStyle: {
             fontSize: 8,
         },
-        splitList: [{
+        pieces: [{
+            value: 0
+        },
+        {
             start: 1,
             end: 9
         },
@@ -45,7 +49,7 @@ var ec_center_option = {
             start: 10000
         },
         ],
-        color: ['#8A3310', '#C64918', '#E55B25', '#F2AD92', '#F9DCD1']
+        color: ['#8A3310', '#C64918', '#E55B25', '#F2AD92', '#F9DCD1', '#FFEFD5']
     },
     //配置属性
     series: [{
@@ -107,6 +111,16 @@ $("#changeMap").click(function () {
     })
 })
 
+// 禁止点击图例时不显示某些地区
+ec_center.on('datarangeselected', function(param) {
+	if (param.from)
+	{
+		ec_center.dispatchAction({
+			type: 'selectDataRange',
+			selected: {0: true, 1: true, 2: true, 3: true, 4: true, 5: true},
+		});
+	}
+})
 
 //实现点击疫情地图上的省市板块就将对应数据加到趋势图中：
 ec_center.on('click', function (param) {
@@ -126,7 +140,6 @@ ec_center.on('click', function (param) {
 	else
 	{
 		targetProvince = region;
-        targetProvince = region;
 
 		for (updatedProvince of choice)
 		{
