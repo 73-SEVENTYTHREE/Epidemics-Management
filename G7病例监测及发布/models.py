@@ -33,10 +33,14 @@ def admin():
       if not request.form['Date']  or not request.form['Cure'] or not request.form['Confirm'] or not request.form['Import'] or not request.form['Asymptomatic'] or not request.form['Mortality']:
          flash('Please enter all the fields', 'error')
       else:
-         Record = Record(request.form['Date'], request.form['Cure'],request.form['Confirm'],
-                         request.form['Import'], request.form['Asymptomatic'], request.form['Mortality'])
+         record = Record(Date = request.form['Date'],
+                         Cure = request.form['Cure'],
+                         Confirm = request.form['Confirm'],
+                         Import = request.form['Import'], 
+                         Asymptomatic = request.form['Asymptomatic'], 
+                         Mortality = request.form['Mortality'])
          
-         db.session.add(Record)
+         db.session.add(record)
          db.session.commit()
          
          flash('Record was successfully added')
