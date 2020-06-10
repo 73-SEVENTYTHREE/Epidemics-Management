@@ -1,12 +1,12 @@
 //以下是中国疫情地图部分
 var ec_center = echarts.init(document.getElementById("Epi_map"));
 //dummy data
-var dummy_data = [{ 'name': '上海', 'value': '1' }, { 'name': '重庆', 'value': '23' }, { 'name': '北京', 'value': '323' },
+/*
+var mapDataTotal = [{ 'name': '上海', 'value': '1' }, { 'name': '重庆', 'value': '23' }, { 'name': '北京', 'value': '323' },
 { 'name': '海南', 'value': '1123' }, { 'name': '西藏', 'value': '523' }, { 'name': '台湾', 'value': '42113' }];
-var dummy_data2 = [{ 'name': '上海', 'value': '1' }, { 'name': '重庆', 'value': '23' }, { 'name': '北京', 'value': '3' },
+var mapDataNow = [{ 'name': '上海', 'value': '1' }, { 'name': '重庆', 'value': '23' }, { 'name': '北京', 'value': '3' },
 { 'name': '海南', 'value': '13' }, { 'name': '西藏', 'value': '3' }, { 'name': '台湾', 'value': '42' }];
-
-var choice = dummy_data;
+*/
 var ec_center_option = {
     title: {
         text: '',
@@ -79,7 +79,7 @@ var ec_center_option = {
                 fontSize: 8,
             }
         },
-        data: choice //数据
+        data: [] //数据
     }]
 };
 ec_center.setOption(ec_center_option);
@@ -88,14 +88,14 @@ ec_center.setOption(ec_center_option);
 //实现点击按钮切换地图类型
 $("#changeMap").click(function () {
     var diagnosed;
-    if (choice == dummy_data) {
-        choice = dummy_data2;
+    if (choice == mapDataTotal) {
+        choice = mapDataNow;
         $("#changeMap").html('切换累积确诊地图');
         diagnosed='剩余确诊人数';
 
     }
     else {
-        choice = dummy_data;
+        choice = mapDataTotal;
         $("#changeMap").html('切换现存确诊地图')
         $("#changeMap").html('切换现存确诊地图');
         diagnosed='累积确诊人数';

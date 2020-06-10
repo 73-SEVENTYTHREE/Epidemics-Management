@@ -53,16 +53,22 @@ var data = [{
 }
 ];
 // 样例目标省份。可填各省名称、"全国"、"非湖北"
-var targetProvince = "浙江";
+var targetProvince = "全国";
 
 
-// 计算全国及目标地区各日数据
+// 计算全国及目标地区各日数据，及全国现存\累计的地图数据
 var nationwideData = []; // 绘制用数据
+var mapDataNow = []; // 全国现存确诊
+var mapDataTotal = []; // 全国累计确诊
 for (const provinceN in data) {
     province = data[provinceN];
+	provinceDiagnosedNow = 0;
+	provinceDiagnosedTotal = 0;
     for (const dataN in province.data) {
         // 计算全国累计治愈、死亡
         dateData = province.data[dataN];
+		provinceDiagnosedNow += dateData.diagnosed - dateData.cured - dateData.dead;
+		provinceDiagnosedTotal += dateData.diagnosed;
         if (provinceN == 0) {
             nationwideData.push({
                 date: dateData.date,
@@ -77,7 +83,23 @@ for (const provinceN in data) {
             toModifiedData.dead += dateData.dead;
         }
     }
+	mapDataNow.push({
+		name: province.province,
+		value: provinceDiagnosedNow,
+	})
+	mapDataTotal.push({
+		name: province.province,
+		value: provinceDiagnosedTotal,
+	})
 }
+
+// 绘制地图。相关函数见Epi_map.js
+var choice = mapDataTotal;
+ec_center.setOption({
+	series: [{
+		data: mapDataTotal,
+	}]
+})
 
 // 计算全国治愈率、死亡率趋势
 var nationwideRateData = [];
@@ -160,29 +182,38 @@ function calcTargetData() {
                         date: dateData.date,
                         diagnosed: dateData.diagnosed,
                         cured: dateData.cured,
-                        dead: dateData.dead
+                        dead: dateData.dead,
+						imported: dateData.imported,
                     });
                 } else {
                     toModifiedData = targetData[dataN];
                     toModifiedData.diagnosed += dateData.diagnosed;
                     toModifiedData.cured += dateData.cured;
                     toModifiedData.dead += dateData.dead;
+					toModifiedData.imported += dateData.imported;
                 }
             }
         	firstProvince = 0;
         }
     }
     // 计算目标地区累计确诊、死亡、治愈
-    var totalDiagnosed = 0, totalCured = 0, totalDead = 0;
+    var totalDiagnosed = 0, totalCured = 0, totalDead = 0, totalImported = 0;
     for (dateData of targetData) {
         totalDiagnosed += dateData.diagnosed;
         totalCured += dateData.cured;
         totalDead += dateData.dead;
+		totalImported += dateData.imported
         dateData.totalDiagnosed = totalDiagnosed;
         dateData.totalCured = totalCured;
         dateData.totalDead = totalDead;
     }
-var optionTC2 = {
+	// 更新数据展示页的四个数字数据
+	$("#confirm").text(totalDiagnosed.toString());
+	$("#import").text(totalImported.toString());
+	$("#mortality").text(totalDead.toString());
+	$("#cure").text(totalCured.toString());
+	
+	var optionTC2 = {
     // 显示目标地区累计确诊、死亡、治愈趋势图
         title: {
             text: '累计确诊、死亡、治愈趋势图'
@@ -219,7 +250,7 @@ var optionTC2 = {
         }
     };
     trendChart2.setOption(optionTC2);
-var optionTC3 = {
+	var optionTC3 = {
     // 显示目标地区每日新增确诊趋势图
         title: {
             text: '每日新增确诊趋势图'
