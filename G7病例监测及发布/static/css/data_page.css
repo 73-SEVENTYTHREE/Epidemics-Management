@@ -66,12 +66,13 @@
     position: fixed;
 }
 
-.region_label{
-    padding-bottom: 3rem;
-    /* margin: 1 rem; */
-    font-size: 20px;
-    color: #DC143C;
-    font-family: Microsoft YaHei;
+.region_div{
+    color: #33CCFF;
+    font-family:'华文细黑';
+    border: bisque;
+    border-radius: 2rem;
+    text-align: center;
+
 }
 
 .shadow-sm{
