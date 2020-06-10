@@ -4,7 +4,8 @@ from flask import Blueprint
 from sqlalchemy import func
 import os
 import user
-
+import json
+import pymysql
 app = Flask(__name__)
 app.register_blueprint(user.bp)
 
@@ -13,6 +14,10 @@ bp.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Yang654321@127.0.0.
 db = SQLAlchemy(bp)
 bp.secret_key = '!@#$%^&*()11'
 
+#每日记录的类
+class alldata(object):
+    def __init__(self):
+        self.ver = {}
 #建立数据库表
 class Record(db.Model):
     __tablename__ = 'records'
@@ -82,41 +87,49 @@ def index():
 #向前端发送json数据
 @bp.route('/uplord',methods=['POST'])
 def uplord():
-    class alldata(object):
-        def __init__(self):
-            self.ver = {}
-    import pymysql
-        # 打开数据库连接
-        db = pymysql.connect("localhost", "root", "Yang654321", "test")
-        # 使用cursor()方法获取操作游标
-        cursor = db.cursor()
-        # SQL 查询语句
-        sql = "SELECT * FROM Record ORDER BY Region,Date"
-        try:
-        # 执行SQL语句
-            cursor.execute(sql)
-            result = cursor.fetchone()
-            while result != None:
-                var1 = Record.Region
-                if(var1 == var2):
-                    test = alldata()
-                    test.ver = {'province' : Record.Region, 'data' = []}
-                    dict = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
-                    data.append(dict)
-                    result = cursor.fetchone()
-                else:
-                    return jsonify(test.ver)
-                    test = alldata()
-                    test.ver = {'province' : Record.Region, 'data' = []}
-                    dict = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
-                    data.append(dict)
-                    result = cursor.fetchone()
-                var2 = Record.Region
-         # 关闭数据库连接
-         db.close()    
-    
+    return jsonify(provinceset)
+#这里只是返回数据就没了。
 
-         
+
+
+
+
+#######################################################################
+#请留意管理员更新数据后应该重新修改province这个列表里面的对应省市的每日记录
+#######################################################################
+
+
+#应该在这个时候查询数据库
 if __name__ == "__main__":
     bp.run()
     bp.run(debug=True)
+    # 打开数据库连接
+    db = pymysql.connect("localhost", "root", "Yang654321", "test")
+    # 使用cursor()方法获取操作游标
+    cursor = db.cursor()
+    # SQL 查询语句
+    sql = "SELECT * FROM Record ORDER BY Region,Date"
+    var2=''
+    provinceset=[]
+    try:
+    # 执行SQL语句
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        while result != None:
+            var1 = Record.Region
+            if(var1 == var2):
+                test = alldata()
+                test.ver = {'province' : Record.Region, 'data' : []}
+                dict = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
+                data.append(dict)
+                result = cursor.fetchone()
+            else:
+                provinceset.append(test)
+                test = alldata()
+                test.ver = {'province' : Record.Region, 'data' = []}
+                dict = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
+                data.append(dict)
+                result = cursor.fetchone()
+            var2 = Record.Region
+        # 关闭数据库连接
+        db.close()    
