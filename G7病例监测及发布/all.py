@@ -13,6 +13,7 @@ bp.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Yang654321@127.0.0.
 db = SQLAlchemy(bp)
 bp.secret_key = '!@#$%^&*()11'
 
+#建立数据库表
 class Record(db.Model):
     __tablename__ = 'records'
     Date = db.Column(db.Date, primary_key = True)
@@ -78,14 +79,13 @@ def index():
     print(session.get('user'))
     return render_template('data.html')
 
-
 #向前端发送json数据
-@bp.route('/sendjson',methods=['POST'])
-def sendjson():
+@bp.route('/uplord',methods=['POST'])
+def uplord():
     class alldata(object):
-    def __init__(self):
-        self.ver = {}
-        import pymysql
+        def __init__(self):
+            self.ver = {}
+    import pymysql
         # 打开数据库连接
         db = pymysql.connect("localhost", "root", "Yang654321", "test")
         # 使用cursor()方法获取操作游标
@@ -113,7 +113,8 @@ def sendjson():
                     result = cursor.fetchone()
                 var2 = Record.Region
          # 关闭数据库连接
-         db.close()
+         db.close()    
+    
 
          
 if __name__ == "__main__":
