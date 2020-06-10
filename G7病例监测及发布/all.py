@@ -21,13 +21,14 @@ class alldata(object):
 #建立数据库表
 class Record(db.Model):
     __tablename__ = 'records'
-    Date = db.Column(db.Date, primary_key = True)
     Region = db.Column(db.String(64), primary_key = True)
+    Date = db.Column(db.Date, primary_key = True)
     Cure = db.Column(db.Integer)
     Comfirm = db.Column(db.Integer)
     Import = db.Column(db.Integer)
     Asymptomatic = db.Column(db.Interger)
     Mortality = db.Column(db.Integer)
+    
 
     def __repr__(self):
         return '<Record %r>' % self.Record  
@@ -39,24 +40,35 @@ if __name__ == '__main__':
 #管理员界面
 @bp.route('/')
 def show_all():
-   return render_template('admin.html',Record = Record.query.all() )
+    return render_template('admin.html',Record = Record.query.all() )
 
 #管理员更新数据界面
 @bp.route('/admin', methods = ['GET', 'POST'])
 def admin():
-   if request.method == 'POST':
-      if not request.form['Date']  or not request.form['Cure'] or not request.form['Confirm'] or not request.form['Import'] or not request.form['Asymptomatic'] or not request.form['Mortality']:
-         flash('Please enter all the fields', 'error')
-      else:
-         Record = Record(request.form['Date'], request.form['Cure'],request.form['Confirm'],
-                         request.form['Import'], request.form['Asymptomatic'], request.form['Mortality'])
-         
-         db.session.add(Record)
-         db.session.commit()
-         
-         flash('Record was successfully added')
-         return redirect(url_for('data page'))
-   return render_template('admin.html')
+    
+    if request.method == 'POST':
+        if not request.form['Date']  or not request.form['Cure'] or not request.form['Confirm'] or not request.form['Import'] or not request.form['Asymptomatic'] or not request.form['Mortality']:
+            flash('Please enter all the fields', 'error')
+        elif not isinstance(request.form['Cure'],int) or not isinstance(request.form['Confirm'],int) or not isinstance(request.form['Import'],int) or not isinstance(request.form['Asymptomatic'],int) or not isinstance(request.form['Mortality'],int):
+            flash('Please enter correct forms','error')
+        elif request.form['Cure']<0 or request.form['Confirm']<0 or request.form['Import']<0 or request.form['Asymptomatic']<0 or request.form['Mortality']<0:
+            flash('Please enter correct forms','error')
+        else:
+            #此处要调用用户管理子系统的session获取省份
+            record = Record(session.get("region"), request.form['Date'], request.form['Cure'],request.form['Confirm'],
+                            request.form['Import'], request.form['Asymptomatic'], request.form['Mortality'])
+            #更新返回前端的数据
+            for pro in provinceset.province:
+                if pro == record.Region:
+                    dic = {'date':record.Date,'diagnosed':record.Confirm,'imported':record.Import,'asymptomatic':record.Asymptomatic,'cured':record.Cure,'dead':record.Mortality}
+                    provinceset.data.append(dic)  
+            #更新数据库
+            db.session.add(record)
+            db.session.commit()
+            
+            flash('Record was successfully added')
+            return redirect(url_for('data page'))
+    return render_template('admin.html')
 
     
 # 用户请求进入数据展示界面
@@ -88,18 +100,8 @@ def index():
 @bp.route('/uplord',methods=['POST'])
 def uplord():
     return jsonify(provinceset)
-#这里只是返回数据就没了。
 
-
-
-
-
-#######################################################################
-#请留意管理员更新数据后应该重新修改province这个列表里面的对应省市的每日记录
-#######################################################################
-
-
-#应该在这个时候查询数据库
+#查询数据库
 if __name__ == "__main__":
     bp.run()
     bp.run(debug=True)
@@ -109,6 +111,7 @@ if __name__ == "__main__":
     cursor = db.cursor()
     # SQL 查询语句
     sql = "SELECT * FROM Record ORDER BY Region,Date"
+    var1=''
     var2=''
     provinceset=[]
     try:
@@ -118,16 +121,18 @@ if __name__ == "__main__":
         while result != None:
             var1 = Record.Region
             if(var1 == var2):
-                test = alldata()
-                test.ver = {'province' : Record.Region, 'data' : []}
-                dict = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
-                data.append(dict)
+                test = {}
+                dic = {}
+                test = {'province' : Record.Region, 'data' : []}
+                dic = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
+                data.append(dic)
                 result = cursor.fetchone()
             else:
                 provinceset.append(test)
-                test = alldata()
-                test.ver = {'province' : Record.Region, 'data' = []}
-                dict = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
+                test = {}
+                dic = {}
+                test = {'province' : Record.Region, 'data' = []}
+                dic = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
                 data.append(dict)
                 result = cursor.fetchone()
             var2 = Record.Region
