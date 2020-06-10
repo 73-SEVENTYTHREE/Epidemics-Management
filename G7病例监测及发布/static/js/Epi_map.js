@@ -101,7 +101,6 @@ $("#changeMap").click(function () {
 	calcTargetData();
     ec_center.setOption({
         series: [{
-            data: choice
             data: choice,
             name:diagnosed
         }]
@@ -122,7 +121,6 @@ ec_center.on('click', function (param) {
 		{
 			delete updatedProvince.itemStyle;
 		}
-        }
         $("#Region_Name").html("当前地区: 全国");
 	}
 	else
@@ -146,7 +144,6 @@ ec_center.on('click', function (param) {
 				}
 			}
 		}
-        }
         $("#Region_Name").html("当前地区: "+param['name']);
 	}
 	

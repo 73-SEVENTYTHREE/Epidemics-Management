@@ -1,9 +1,9 @@
 {% extends "framework.html" %}
 {% block content %}
 <!-- This part is the body of the website. Just simply replace the follwoing comments with your own codes. Attentnion: no <body> </body> part is needed-->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.min.css') }}">
 <script src="{{ url_for('static', filename='js/bootstrap-datepicker.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.zh-CN.min.js" charset="UTF-8"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-datepicker.zh-CN.min.js') }}" charset="UTF-8"></script>
 <script src="{{ url_for('static', filename='js/jquery.validate.min.js') }}"></script>
 <div class="container">
 	<div class="row clearfix">
