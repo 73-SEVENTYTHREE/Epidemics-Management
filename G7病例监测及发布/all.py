@@ -58,10 +58,10 @@ def admin():
             record = Record(session.get("region"), request.form['Date'], request.form['Cure'],request.form['Confirm'],
                             request.form['Import'], request.form['Asymptomatic'], request.form['Mortality'])
             #更新返回前端的数据
-            for pro in provinceset.province:
-                if pro == record.Region:
+            for pro in provinceset:
+                if pro['province'] == record.Region:
                     dic = {'date':record.Date,'diagnosed':record.Confirm,'imported':record.Import,'asymptomatic':record.Asymptomatic,'cured':record.Cure,'dead':record.Mortality}
-                    provinceset.data.append(dic)  
+                    pro['data'].append(dic)  
             #更新数据库
             db.session.add(record)
             db.session.commit()
@@ -125,16 +125,18 @@ if __name__ == "__main__":
                 dic = {}
                 test = {'province' : Record.Region, 'data' : []}
                 dic = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
-                data.append(dic)
+                test['data'].append(dic)
                 result = cursor.fetchone()
             else:
                 provinceset.append(test)
                 test = {}
                 dic = {}
-                test = {'province' : Record.Region, 'data' = []}
+                test = {'province' : Record.Region, 'data' : []}
                 dic = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
-                data.append(dict)
+                test['data'].append(dict)
                 result = cursor.fetchone()
             var2 = Record.Region
+    except Exception as ex:
+        print('wrong!')
         # 关闭数据库连接
-        db.close()    
+    # db.close()    
