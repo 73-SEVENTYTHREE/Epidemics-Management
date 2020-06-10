@@ -83,14 +83,18 @@ ec_center.setOption(ec_center_option);
 // document.getElementById('Epi_map').css.style.backgroundColor='transparent';
 //实现点击按钮切换地图类型
 $("#changeMap").click(function () {
+    var diagnosed;
     if (choice == dummy_data) {
         choice = dummy_data2;
         $("#changeMap").html('切换累积确诊地图');
+        diagnosed='剩余确诊人数';
 
     }
     else {
         choice = dummy_data;
         $("#changeMap").html('切换现存确诊地图')
+        $("#changeMap").html('切换现存确诊地图');
+        diagnosed='累积确诊人数';
     }
 	// 重新设置地区
 	targetProvince = "全国";
@@ -98,6 +102,8 @@ $("#changeMap").click(function () {
     ec_center.setOption({
         series: [{
             data: choice
+            data: choice,
+            name:diagnosed
         }]
     })
 })
@@ -116,10 +122,14 @@ ec_center.on('click', function (param) {
 		{
 			delete updatedProvince.itemStyle;
 		}
+        }
+        $("#Region_Name").html("当前地区: 全国");
 	}
 	else
 	{
 		targetProvince = region;
+        targetProvince = region;
+
 		for (updatedProvince of choice)
 		{
 			if (updatedProvince.name != region)
@@ -136,6 +146,8 @@ ec_center.on('click', function (param) {
 				}
 			}
 		}
+        }
+        $("#Region_Name").html("当前地区: "+param['name']);
 	}
 	
     ec_center.setOption({
