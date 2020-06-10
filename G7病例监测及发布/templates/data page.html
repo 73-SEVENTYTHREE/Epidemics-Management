@@ -13,8 +13,11 @@
 					<div class="row ">
 						<div class="col-lg-12"><label id="Region_Name" class="region_label">当前地区：全国</label> </div>
 					</div>
+				<div class="col-lg-10 ml-auto mr-auto" style="padding-top: 3rem;">
+
 					<div class="row">
 						<div class="col-lg-5 border DisplayBox ml-auto shadow-sm">
+						<div class="col-lg-3 border DisplayBox ml-auto shadow-sm" >
 
 							<div class="DispalyLabel statistics_label">累积确诊</div>
 							<div class="DisplayNum" id="confirm">123123</div>
@@ -22,16 +25,19 @@
 
 						</div>
 						<div class="col-lg-5  border DisplayBox ml-auto mr-auto shadow-sm">
+						<div class="col-lg-3  border DisplayBox ml-auto mr-auto shadow-sm">
 							<div class="DispalyLabel">累积输入</div>
 							<div class="DisplayNum" id="import">123123</div>
 						</div>
 					</div>
 					<div class="row pt-4">
 						<div class="col-lg-5 border DisplayBox ml-auto shadow-sm">
+						<div class="col-lg-3 border DisplayBox ml-auto shadow-sm">
 							<div class="DispalyLabel">累计死亡</div>
 							<div class="DisplayNum" id="mortality">123123</div>
 						</div>
 						<div class="col-lg-5 border DisplayBox mr-auto ml-auto shadow-sm">
+						<div class="col-lg-3 border DisplayBox mr-auto ml-auto shadow-sm">
 							<div class="DispalyLabel">累积治愈</div>
 							<div class="DisplayNum" id="cure">123123</div>
 						</div>
@@ -43,6 +49,9 @@
 
 			</div>
 			<div class="jumbotron col-lg-12 column">
+				<div class="row ">
+					<div class="col-lg-12 text-center "><label id="Region_Name" class="region_div ">当前地区：全国</label> </div>
+				</div>
 				<!-- <h1>
 					以下是疫情地图
 				</h1> -->
@@ -81,6 +90,7 @@
 	<script src="{{url_for('static',filename='js/china.js')}}"></script>
 	<script src="{{url_for('static',filename='js/Epi_map.js')}}"></script>
 	<script src="{{url_for('static',filename='js/statistics.js')}}"></script>
+	<script src="{{url_for('static',filename='js/Epi_map.js')}}"></script>
 
 
 

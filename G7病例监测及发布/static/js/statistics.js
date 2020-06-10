@@ -184,9 +184,9 @@ function calcTargetData() {
     }
 
     // 显示目标地区累计确诊、死亡、治愈趋势图
-    var optionTC2 = {
         title: {
             text: '各地累计确诊、死亡、治愈趋势图'
+            text: '累计确诊、死亡、治愈趋势图'
         },
         tooltip: {
             formatter: function (params) {
@@ -221,9 +221,9 @@ function calcTargetData() {
     trendChart2.setOption(optionTC2);
 
     // 显示目标地区每日新增确诊趋势图
-    var optionTC3 = {
         title: {
             text: '各地每日新增确诊对比图'
+            text: '每日新增确诊趋势图'
         },
         tooltip: {
             formatter: function (params) {
@@ -300,6 +300,7 @@ for (const index in provinceGather) {
 optionContrast = {
     title: {
         text: '每日境外输入趋势图'
+        text: '每日境外输入对比图'
     },
     tooltip: {
         trigger: 'axis',
