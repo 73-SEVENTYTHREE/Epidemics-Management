@@ -69,6 +69,10 @@
 	<script src="{{url_for('static',filename='js/echarts.min.js')}}"></script>
 	<script src="{{url_for('static',filename='js/china.js')}}"></script>
 	<script src="{{url_for('static',filename='js/Epi_map.js')}}"></script>
+	<script>
+          // 获取样例目标省份。可填各省名称、"全国"、"非湖北"。默认为"全国"
+          var targetProvince = {% if province %}{{province}}{% else %}"全国"{% endif %};
+	</script>
 	<script src="{{url_for('static',filename='js/statistics.js')}}"></script>
 
 

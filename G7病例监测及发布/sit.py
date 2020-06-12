@@ -1,13 +1,16 @@
+# 疫情数据子系统的文件。主入口在all.py。
+
 from flask import Flask, request, flash, url_for, redirect, render_template, session
 from flask_sqlalchemy import SQLAlchemy
 from flask import Blueprint
 import json
 import pymysql
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Yang654321@127.0.0.1/test'
-db = SQLAlchemy(app)
-app.secret_key = '!@#$%^&*()11'
+# 为了尽可能减少部署时因服务器文件系统环境导致翻车，因此用如下写法
+app = Flask(__name__.split('.')[0])
+# 为了方便整合，我们的内容用一个Blueprint封装。
+bp = Blueprint('sit', __name__, url_prefix='/situation')
+_db = SQLAlchemy(app) #为了防止和其他组的变量名冲突，因此改为私有
 
 #每日记录的类
 class alldata(object):
@@ -15,28 +18,27 @@ class alldata(object):
         self.ver = {}
         
 #建立数据库表
-class Record(db.Model):
+class Record(_db.Model):
     __tablename__ = 'records'
-    Region = db.Column(db.String(64), primary_key = True)
-    Date = db.Column(db.Date, primary_key = True)
-    Cure = db.Column(db.Integer)
-    Comfirm = db.Column(db.Integer)
-    Import = db.Column(db.Integer)
-    Asymptomatic = db.Column(db.Integer)
-    Mortality = db.Column(db.Integer)
+    Region = _db.Column(_db.String(64), primary_key = True)
+    Date = _db.Column(_db.Date, primary_key = True)
+    Cure = _db.Column(_db.Integer)
+    Comfirm = _db.Column(_db.Integer)
+    Import = _db.Column(_db.Integer)
+    Asymptomatic = _db.Column(_db.Integer)
+    Mortality = _db.Column(_db.Integer)
     
     def __repr__(self):
         return '<Record %r>' % self.Record  
              
-#管理员界面
-@app.route('/')
-def show_all():
-    return render_template('admin.html',Record = Record.query.all() )
+###管理员界面
+##@app.route('/')
+##def show_all():
+##    return render_template('admin.html',Record = Record.query.all() )
 
-#管理员更新数据界面
-@app.route('/admin', methods = ['GET', 'POST'])
+# 管理员更新数据界面，完整路由为"/situation/admin/"
+@bp.route('/admin/', methods = ['GET', 'POST'])
 def admin():
-    
     if request.method == 'POST':
         if not request.form['Date']  or not request.form['Cure'] or not request.form['Confirm'] or not request.form['Import'] or not request.form['Asymptomatic'] or not request.form['Mortality']:
             flash('Please enter all the fields', 'error')
@@ -55,16 +57,20 @@ def admin():
                     dic = {'date':record.Date,'diagnosed':record.Confirm,'imported':record.Import,'asymptomatic':record.Asymptomatic,'cured':record.Cure,'dead':record.Mortality}
                     pro['data'].append(dic)  
             #更新数据库
-            db.session.add(record)
-            db.session.commit()
+            _db.session.add(record)
+            _db.session.commit()
             
             flash('Record was successfully added')
             return redirect(url_for('data page.html'))
-    return render_template('admin.html')
+    else:
+        if not session.get("region"):
+            pass # TODO：跳转到用户管理子系统的管理员登录页面
+        return render_template('admin.html')
 
-    
+# 下面这堆其实不是我们组管的，也没必要真整个login出来……
+'''
 # 用户请求进入数据展示界面
-@app.route('/login', methods=['GET', 'POST'])
+@bp.route('/login/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -81,28 +87,76 @@ def login():
 # 接受反序列化Session;从cookie中获取到一个session key的值
 # 通过Secretkey 解密session
 # 反序列化成字典
+'''
 
-#数据展示界面
-@app.route('/data')
+#数据展示界面，完整路由为"/situation/"
+@bp.route('/')
 def index():
     print(session.get('user'))
     return render_template('data page.html')
 
 #向前端发送json数据
-@app.route('/uplord',methods=['POST'])
-def uplord():
-    return jsonify(provinceset)
+@bp.route('/epidata/',methods=['GET']) # 这里是GET啊！GET！
+#这里原来是uplord，但是在用户的视角应当是获取数据，因此修改路由。
+def upload():
+    # 暂时先禁用，使用测试数据，待后端部署完成
+    # return jsonify(provinceset)
+    return """
+    [{
+        "province": "浙江",
+        "data": [{
+            "date": "03-01", "diagnosed": 100, "imported": 10,
+            "asymptomatic": 15, "cured": 5, "dead": 1
+        },
+        {
+            "date": "03-02", "diagnosed": 90, "imported": 9,
+            "asymptomatic": 20, "cured": 10, "dead": 2
+        },
+        {
+            "date": "03-03", "diagnosed": 80, "imported": 2,
+            "asymptomatic": 17, "cured": 15, "dead": 0
+        }]
+    },
+    {
+        "province": "江苏",
+        "data": [{
+            "date": "03-01", "diagnosed": 70, "imported": 5,
+            "asymptomatic": 12, "cured": 13, "dead": 1
+        },
+        {
+            "date": "03-02", "diagnosed": 30, "imported": 6,
+            "asymptomatic": 32, "cured": 43, "dead": 0
+        },
+        {
+            "date": "03-03", "diagnosed": 40, "imported": 7,
+            "asymptomatic": 14, "cured": 24, "dead": 1
+        }]
+    },
+    {
+        "province": "湖北",
+        "data": [{
+            "date": "03-01", "diagnosed": 70, "imported": 6,
+            "asymptomatic": 12, "cured": 13, "dead": 1
+        },
+        {
+            "date": "03-02", "diagnosed": 30, "imported": 30,
+            "asymptomatic": 32, "cured": 43, "dead": 0
+        },
+        {
+            "date": "03-03", "diagnosed": 40, "imported": 1,
+            "asymptomatic": 14, "cured": 24, "dead": 1
+        }]
+    }
+    ]
+    """
 
-#查询数据库
-if __name__ == "__main__":
-    app.run()
-    app.run(debug=True)
-    db.drop_all()
-    db.create_all()
+def initSituation():
+    global _db
+    # 初始化本模块
+    _db.drop_all()
+    _db.create_all()
     # 打开数据库连接
-    db = pymysql.connect("localhost", "root", "Yang654321", "test")
-    # 使用cursor()方法获取操作游标
-    cursor = db.cursor()
+    _db = pymysql.connect("localhost", "root", "Yang654321", "test")
     # SQL 查询语句
     sql = "SELECT * FROM Record ORDER BY Region,Date"
     var1=''
@@ -133,4 +187,4 @@ if __name__ == "__main__":
     except Exception as ex:
         print('wrong!')
         # 关闭数据库连接
-    # db.close()    
+
