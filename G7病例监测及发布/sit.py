@@ -1,22 +1,25 @@
 # 疫情数据子系统的文件。主入口在all.py。
 
-from flask import Flask, request, flash, url_for, redirect, render_template, session
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request, flash, url_for, \
+     redirect, render_template, session, jsonify
+#from flask_sqlalchemy import SQLAlchemy
 from flask import Blueprint
 import json
 import pymysql
+import traceback
 
 # 为了尽可能减少部署时因服务器文件系统环境导致翻车，因此用如下写法
 app = Flask(__name__.split('.')[0])
 # 为了方便整合，我们的内容用一个Blueprint封装。
 bp = Blueprint('sit', __name__, url_prefix='/situation')
-_db = SQLAlchemy(app) #为了防止和其他组的变量名冲突，因此改为私有
+#_db = SQLAlchemy(app) #为了防止和其他组的变量名冲突，因此改为私有
 
 #每日记录的类
 class alldata(object):
     def __init__(self):
         self.ver = {}
-        
+
+'''
 #建立数据库表
 class Record(_db.Model):
     __tablename__ = 'records'
@@ -30,7 +33,8 @@ class Record(_db.Model):
     
     def __repr__(self):
         return '<Record %r>' % self.Record  
-             
+'''
+
 ###管理员界面
 ##@app.route('/')
 ##def show_all():
@@ -41,14 +45,17 @@ class Record(_db.Model):
 def admin():
     if request.method == 'POST':
         if not request.form['Date']  or not request.form['Cure'] or not request.form['Confirm'] or not request.form['Import'] or not request.form['Asymptomatic'] or not request.form['Mortality']:
-            flash('Please enter all the fields', 'error')
+            flash('请填写全部字段', 'error')
         elif not isinstance(request.form['Cure'],int) or not isinstance(request.form['Confirm'],int) or not isinstance(request.form['Import'],int) or not isinstance(request.form['Asymptomatic'],int) or not isinstance(request.form['Mortality'],int):
-            flash('Please enter correct forms','error')
+            flash('请输入正确的值','error')
         elif request.form['Cure']<0 or request.form['Confirm']<0 or request.form['Import']<0 or request.form['Asymptomatic']<0 or request.form['Mortality']<0:
-            flash('Please enter correct forms','error')
+            flash('请输入正确的值','error')
         else:
+            if not session.get("province") or session.get("identity") != 2:
+                flash('管理员验证失败，请重新登录','error')
+                pass # TODO：跳转到用户管理子系统的管理员登录页面
             #此处要调用用户管理子系统的session获取省份
-            record = Record(session.get("region"), request.form['Date'], request.form['Cure'],request.form['Confirm'],
+            record = Record(session.get("province"), request.form['Date'], request.form['Cure'],request.form['Confirm'],
                             request.form['Import'], request.form['Asymptomatic'], request.form['Mortality'])
             #更新返回前端的数据
             for pro in provinceset:
@@ -63,7 +70,7 @@ def admin():
             flash('Record was successfully added')
             return redirect(url_for('data page.html'))
     else:
-        if not session.get("region"):
+        if session.get("identity") != 2: # 非我们系统的管理员
             pass # TODO：跳转到用户管理子系统的管理员登录页面
         return render_template('admin.html')
 
@@ -99,92 +106,67 @@ def index():
 @bp.route('/epidata/',methods=['GET']) # 这里是GET啊！GET！
 #这里原来是uplord，但是在用户的视角应当是获取数据，因此修改路由。
 def upload():
-    # 暂时先禁用，使用测试数据，待后端部署完成
-    # return jsonify(provinceset)
-    return """
-    [{
-        "province": "浙江",
-        "data": [{
-            "date": "03-01", "diagnosed": 100, "imported": 10,
-            "asymptomatic": 15, "cured": 5, "dead": 1
-        },
-        {
-            "date": "03-02", "diagnosed": 90, "imported": 9,
-            "asymptomatic": 20, "cured": 10, "dead": 2
-        },
-        {
-            "date": "03-03", "diagnosed": 80, "imported": 2,
-            "asymptomatic": 17, "cured": 15, "dead": 0
-        }]
-    },
-    {
-        "province": "江苏",
-        "data": [{
-            "date": "03-01", "diagnosed": 70, "imported": 5,
-            "asymptomatic": 12, "cured": 13, "dead": 1
-        },
-        {
-            "date": "03-02", "diagnosed": 30, "imported": 6,
-            "asymptomatic": 32, "cured": 43, "dead": 0
-        },
-        {
-            "date": "03-03", "diagnosed": 40, "imported": 7,
-            "asymptomatic": 14, "cured": 24, "dead": 1
-        }]
-    },
-    {
-        "province": "湖北",
-        "data": [{
-            "date": "03-01", "diagnosed": 70, "imported": 6,
-            "asymptomatic": 12, "cured": 13, "dead": 1
-        },
-        {
-            "date": "03-02", "diagnosed": 30, "imported": 30,
-            "asymptomatic": 32, "cured": 43, "dead": 0
-        },
-        {
-            "date": "03-03", "diagnosed": 40, "imported": 1,
-            "asymptomatic": 14, "cured": 24, "dead": 1
-        }]
-    }
-    ]
-    """
+    return jsonify({'provinceset': provinceset,
+                    'dates': datadateset})
 
 def initSituation():
+    global provinceset, datadateset
     global _db
-    # 初始化本模块
-    _db.drop_all()
-    _db.create_all()
-    # 打开数据库连接
-    _db = pymysql.connect("localhost", "root", "Yang654321", "test")
-    # SQL 查询语句
-    sql = "SELECT * FROM Record ORDER BY Region,Date"
-    var1=''
-    var2=''
-    provinceset=[]
     try:
-    # 执行SQL语句
+        # 初始化本模块
+        #_db.drop_all()
+        #_db.create_all()
+        # 打开数据库连接
+        _db= pymysql.connect(host="120.55.44.111",user="root",password="root",db="situation",port=3306,charset='utf8')
+        cursor = _db.cursor()
+        # SQL 查询语句
+        sql = "SELECT * FROM records ORDER BY Region, Date"
+##        var1=''
+##        var2=''
+        provinceset = [] # 查询时需要返回的数据
+        datadateset = [] # 所有的日期，按顺序排列
+        # 执行SQL语句
         cursor.execute(sql)
-        result = cursor.fetchone()
-        while result != None:
-            var1 = Record.Region
-            if(var1 == var2):
-                test = alldata()
-                dic = {}
-                test.ver = {'province' : Record.Region, 'data' : []}
-                dic = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
-                test['data'].append(dic)
-                result = cursor.fetchone()
-            else:
-                provinceset.append(test)
-                test = alldata()
-                dic = {}
-                test.ver = {'province' : Record.Region, 'data' : []}
-                dic = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
-                test['data'].append(dict)
-                result = cursor.fetchone()
-            var2 = Record.Region
+        results = cursor.fetchall() # 不要一个一个拿，会有问题的
+        # print(results)
+        #print("init", results)
+        tempdata = {} # 一个便于后续计算，临时存储各省份信息的变量
+        for result in results:
+            if result[0] not in tempdata:
+                tempdata[result[0]] = []
+            if result[1].strftime('%m-%d') not in datadateset:
+                datadateset.append(result[1].strftime('%m-%d'))
+            tempdata[result[0]].append({'date': result[1].strftime('%m-%d'),
+                                        'diagnosed': result[2],
+                                        'cured': result[3],
+                                        'dead': result[4],
+                                        'imported': result[5],
+                                        'asymptomatic': result[6]})
+        # 将这些数据转换成所需要的格式
+        for province in tempdata:
+            provinceset.append({'province': province,
+                                'data': tempdata[province]})
+        datadateset.sort()
+        #print(provinceset)
+            #print(tempdata)
+##            var1 = Record.Region
+##            if(var1 == var2):
+##                test = alldata()
+##                dic = {}
+##                test.ver = {'province' : Record.Region, 'data' : []}
+##                dic = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
+##                test['data'].append(dic)
+##                result = cursor.fetchone()
+##            else:
+##                provinceset.append(test)
+##                test = alldata()
+##                dic = {}
+##                test.ver = {'province' : Record.Region, 'data' : []}
+##                dic = {'date':Record.Date,'diagnosed':Record.Confirm,'imported':Record.Import,'asymptomatic':Record.Asymptomatic,'cured':Record.Cure,'dead':Record.Mortality}
+##                test['data'].append(dict)
+##                result = cursor.fetchone()
+##            var2 = Record.Region
     except Exception as ex:
-        print('wrong!')
+        traceback.print_exc()
         # 关闭数据库连接
 

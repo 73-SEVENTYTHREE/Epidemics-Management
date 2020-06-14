@@ -1,5 +1,11 @@
 //以下是中国疫情地图部分
 var ec_center = echarts.init(document.getElementById("Epi_map"));
+
+// 预先定义变量
+var choice = [];
+var provinceGather = [];
+var mapDataNow = []; // 全国现存确诊
+var mapDataTotal = []; // 全国累计确诊
 //dummy data
 /*
 var mapDataTotal = [{ 'name': '上海', 'value': '1' }, { 'name': '重庆', 'value': '23' }, { 'name': '北京', 'value': '323' },
@@ -87,6 +93,7 @@ ec_center.setOption(ec_center_option);
 // document.getElementById('Epi_map').css.style.backgroundColor='transparent';
 //实现点击按钮切换地图类型
 $("#changeMap").click(function () {
+	//console.log(mapDataNow, mapDataTotal)
     var diagnosed;
     if (choice == mapDataTotal) {
         choice = mapDataNow;
@@ -133,14 +140,15 @@ ec_center.on('click', function (param) {
 		{
 			delete updatedProvince.itemStyle;
 		}
-        $("#Region_Name").html("当前地区: 全国");
 	}
 	else
 	{
 		targetProvince = region;
 		highlightSelected()
-        $("#Region_Name").html("当前地区: "+param['name']);
 	}
+    $("#Region_Name").html("当前地区: "+targetProvince);
+	
+	calcTargetData(); // 更新其他图
 	
     ec_center.setOption({
         series: [{

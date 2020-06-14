@@ -5,7 +5,7 @@ import os
 
 def create_app(test_config=None):
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Yang654321@127.0.0.1/test'
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@120.55.44.111:3306/records'
     app.secret_key = '!@#$%^&*()11'
 
     try:
@@ -18,7 +18,7 @@ def create_app(test_config=None):
     app.register_blueprint(sit.bp)
 
     # 疫情数据子系统：初始化子系统的数据。
-    # sit.initSituation()
+    sit.initSituation()
 
     return app
 

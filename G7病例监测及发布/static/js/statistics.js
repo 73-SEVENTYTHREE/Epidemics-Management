@@ -55,6 +55,23 @@ var data = [{
 }
 ];
 */
+var data = [];
+var dates = [];
+
+// 变量与文字对应关系
+var seriesText1 = {
+    curedRate: "治愈率",
+    deadRate: "死亡率"
+};
+var seriesText2 = {
+    totalDiagnosed: "累计确诊",
+    totalDead: "累计死亡",
+    totalCured: "累计治愈"
+};
+var seriesText3 = {
+    diagnosed: "新增确诊"
+};
+
 // 向后端请求疫情数据信息
 $(document).ready(function (){
 	$.ajax({
@@ -62,19 +79,31 @@ $(document).ready(function (){
 		async: true,
 		success: function(dataRaw){
 			// 解析数据
-			var data = JSON.parse(dataRaw)
-
+			data = dataRaw.provinceset;
+			// 日期列表
+			dates = dataRaw.dates;
 			// 计算全国及目标地区各日数据，及全国现存\累计的地图数据
 			var nationwideData = []; // 绘制用数据
-			var mapDataNow = []; // 全国现存确诊
-			var mapDataTotal = []; // 全国累计确诊
 			for (const provinceN in data) {
 				province = data[provinceN];
 				provinceDiagnosedNow = 0;
 				provinceDiagnosedTotal = 0;
-				for (const dataN in province.data) {
+				dataPointer = 0; // 用日期指针解决记录时间可能不连续的问题。
+				for (const date of dates) { // 内循环是日期不是data。
+					dateData = province.data[dataPointer];
 					// 计算全国累计治愈、死亡
-					dateData = province.data[dataN];
+					if ((dateData == undefined || dateData.date != date) && provinceN == 0) {
+						nationwideData.push({
+							date: date,
+							diagnosed: 0,
+							cured: 0,
+							dead: 0
+						});
+						continue;
+					}
+					if (dateData == undefined) {
+						continue;
+					}
 					provinceDiagnosedNow += dateData.diagnosed - dateData.cured - dateData.dead;
 					provinceDiagnosedTotal += dateData.diagnosed;
 					if (provinceN == 0) {
@@ -85,11 +114,12 @@ $(document).ready(function (){
 							dead: dateData.dead
 						});
 					} else {
-						toModifiedData = nationwideData[dataN];
+						toModifiedData = nationwideData[dataPointer];
 						toModifiedData.diagnosed += dateData.diagnosed;
 						toModifiedData.cured += dateData.cured;
 						toModifiedData.dead += dateData.dead;
 					}
+					dataPointer++;
 				}
 				mapDataNow.push({
 					name: province.province,
@@ -102,7 +132,7 @@ $(document).ready(function (){
 			}
 
 			// 绘制地图。相关函数见Epi_map.js
-			var choice = mapDataTotal;
+			choice = mapDataTotal;
 			ec_center.setOption({
 				series: [{
 					data: mapDataTotal,
@@ -122,20 +152,6 @@ $(document).ready(function (){
 					deadRate: (totalDead / totalDiagnosed * 100).toFixed(1)
 				});
 			}
-
-			// 变量与文字对应关系
-			var seriesText1 = {
-				curedRate: "治愈率",
-				deadRate: "死亡率"
-			};
-			var seriesText2 = {
-				totalDiagnosed: "累计确诊",
-				totalDead: "累计死亡",
-				totalCured: "累计治愈"
-			};
-			var seriesText3 = {
-				diagnosed: "新增确诊"
-			};
 
 			// 全国治愈率、死亡率趋势图数据配置
 			var optionTC1 = {
@@ -162,7 +178,11 @@ $(document).ready(function (){
 					}
 				},
 				xAxis: { type: 'category' },
-				yAxis: {type: 'value'},
+				yAxis: {
+					type: 'value',
+					min: 0,
+					max: 100,
+				},
 				series: [
 					{ type: "line" },
 					{ type: "line" }
@@ -177,129 +197,12 @@ $(document).ready(function (){
 			// 使用刚指定的配置项和数据显示图表。
 			trendChart1.setOption(optionTC1);
 			// 计算各省累计、新增数据并显示图表。之所以单独作为函数是因为这一块可能会被反复调用，因此以重复遍历为代价增强复用性。
-			function calcTargetData() {
-				// 计算目标地区新增数据
-				var targetData = []; // 绘制用数据
-				var firstProvince = 1; // 判断是否为第一个录入的省份
-				for (const province of data) {
-					if (province.province == targetProvince || targetProvince == "全国" || (targetProvince == "非湖北" && province.province != "湖北")) {
-						for (const dataN in province.data) {
-							dateData = province.data[dataN];
-							if (firstProvince == 1) {
-								targetData.push({
-									date: dateData.date,
-									diagnosed: dateData.diagnosed,
-									cured: dateData.cured,
-									dead: dateData.dead,
-									imported: dateData.imported,
-								});
-							} else {
-								toModifiedData = targetData[dataN];
-								toModifiedData.diagnosed += dateData.diagnosed;
-								toModifiedData.cured += dateData.cured;
-								toModifiedData.dead += dateData.dead;
-								toModifiedData.imported += dateData.imported;
-							}
-						}
-						firstProvince = 0;
-					}
-				}
-				// 计算目标地区累计确诊、死亡、治愈
-				var totalDiagnosed = 0, totalCured = 0, totalDead = 0, totalImported = 0;
-				for (dateData of targetData) {
-					totalDiagnosed += dateData.diagnosed;
-					totalCured += dateData.cured;
-					totalDead += dateData.dead;
-					totalImported += dateData.imported
-					dateData.totalDiagnosed = totalDiagnosed;
-					dateData.totalCured = totalCured;
-					dateData.totalDead = totalDead;
-				}
-				// 更新数据展示页的四个数字数据
-				$("#confirm").text(totalDiagnosed.toString());
-				$("#import").text(totalImported.toString());
-				$("#mortality").text(totalDead.toString());
-				$("#cure").text(totalCured.toString());
 
-				var optionTC2 = {
-				// 显示目标地区累计确诊、死亡、治愈趋势图
-					title: {
-						text: '累计确诊、死亡、治愈趋势图'
-					},
-					tooltip: {
-						formatter: function (params) {
-							tipString = "日期：" + params.data.date + "<br>";
-							tipString = tipString + seriesText2[params.seriesName] + "：";
-							tipString = tipString + params.data[params.seriesName];
-							return tipString;
-						},
-						textStyle: {
-							align: 'left'
-						}
-					},
-					legend: {
-						selectedMode: false,
-						x: "left",
-						y: "bottom",
-						formatter: function (params) {
-							return seriesText2[params];
-						}
-					},
-					xAxis: { type: 'category' },
-					yAxis: {},
-					series: [
-						{ type: "line" },
-						{ type: "line" },
-						{ type: "line" }
-					],
-					dataset: {
-						dimensions: ['date', 'totalDiagnosed', 'totalDead', 'totalCured'],
-						source: targetData
-					}
-				};
-				trendChart2.setOption(optionTC2);
-				var optionTC3 = {
-				// 显示目标地区每日新增确诊趋势图
-					title: {
-						text: '每日新增确诊趋势图'
-					},
-					tooltip: {
-						formatter: function (params) {
-							tipString = "日期：" + params.data.date + "<br>";
-							tipString = tipString + seriesText3[params.seriesName] + "：";
-							tipString = tipString + params.data[params.seriesName];
-							return tipString;
-						},
-						textStyle: {
-							align: 'left'
-						}
-					},
-					legend: {
-						selectedMode: false,
-						x: "left",
-						y: "bottom",
-						formatter: function (params) {
-							return seriesText3[params];
-						}
-					},
-					xAxis: { type: 'category' },
-					yAxis: {},
-					series: [
-						{ type: "line" }
-					],
-					dataset: {
-						dimensions: ['date', 'diagnosed'],
-						source: targetData
-					}
-				};
-				trendChart3.setOption(optionTC3);
-			}
 			calcTargetData();
 			//modify
 			//趋势图部分
 			var contrastLegend = ['湖北'], contrastXaxis = [];
 			var contrastSeries = [];
-			var provinceGather = [];
 			for (const index in data) {
 				var proName = data[index].province;
 				//contrastLegend.push(proName);
@@ -367,7 +270,145 @@ $(document).ready(function (){
     resizeCharts();
 })
 
-//modify
+function calcTargetData() {
+    // 计算目标地区新增数据
+    var targetData = []; // 绘制用数据
+    var firstProvince = 1; // 判断是否为第一个录入的省份
+    for (const province of data) {
+        if (province.province == targetProvince || targetProvince == "全国" || (targetProvince == "非湖北" && province.province != "湖北")) {
+            dataPointer = 0;	// 操作和第一张图的一样
+            for (const date of dates) {
+                dateData = province.data[dataPointer];
+                if ((dateData == undefined || dateData.date != date) && firstProvince == 1)
+                {
+                    targetData.push({
+                        date: date,
+                        diagnosed: 0,
+                        cured: 0,
+                        dead: 0,
+                        imported: 0,
+                    });
+                    continue;
+                }
+                if (dateData == undefined) {
+                    continue;
+                }
+                if (firstProvince == 1) {
+                    targetData.push({
+                        date: dateData.date,
+                        diagnosed: dateData.diagnosed,
+                        cured: dateData.cured,
+                        dead: dateData.dead,
+                        imported: dateData.imported,
+                    });
+                } else {
+                    toModifiedData = targetData[dataPointer];
+                    toModifiedData.diagnosed += dateData.diagnosed;
+                    toModifiedData.cured += dateData.cured;
+                    toModifiedData.dead += dateData.dead;
+                    toModifiedData.imported += dateData.imported;
+                }
+                dataPointer++;
+            }
+            firstProvince = 0;
+        }
+    }
+    // 计算目标地区累计确诊、死亡、治愈
+    var totalDiagnosed = 0, totalCured = 0, totalDead = 0, totalImported = 0;
+    for (dateData of targetData) {
+        totalDiagnosed += dateData.diagnosed;
+        totalCured += dateData.cured;
+        totalDead += dateData.dead;
+        totalImported += dateData.imported
+        dateData.totalDiagnosed = totalDiagnosed;
+        dateData.totalCured = totalCured;
+        dateData.totalDead = totalDead;
+    }
+    // 更新数据展示页的四个数字数据
+    $("#confirm").text(totalDiagnosed.toString());
+    $("#import").text(totalImported.toString());
+    $("#mortality").text(totalDead.toString());
+    $("#cure").text(totalCured.toString());
+
+    var optionTC2 = {
+    // 显示目标地区累计确诊、死亡、治愈趋势图
+        title: {
+            text: '累计确诊、死亡、治愈趋势图'
+        },
+        tooltip: {
+            formatter: function (params) {
+                tipString = "日期：" + params.data.date + "<br>";
+                tipString = tipString + seriesText2[params.seriesName] + "：";
+                tipString = tipString + params.data[params.seriesName];
+                return tipString;
+            },
+            textStyle: {
+                align: 'left'
+            }
+        },
+        legend: {
+            selectedMode: false,
+            x: "left",
+            y: "bottom",
+            formatter: function (params) {
+                return seriesText2[params];
+            }
+        },
+        xAxis: { type: 'category' },
+        yAxis: { min: 0 },
+        series: [
+            { type: "line" },
+            { type: "line" },
+            { type: "line" }
+        ],
+        grid: {
+            left: "60em",
+        },
+        dataset: {
+            dimensions: ['date', 'totalDiagnosed', 'totalDead', 'totalCured'],
+            source: targetData
+        }
+    };
+    trendChart2.setOption(optionTC2);
+    var optionTC3 = {
+    // 显示目标地区每日新增确诊趋势图
+        title: {
+            text: '每日新增确诊趋势图'
+        },
+        tooltip: {
+            formatter: function (params) {
+                tipString = "日期：" + params.data.date + "<br>";
+                tipString = tipString + seriesText3[params.seriesName] + "：";
+                tipString = tipString + params.data[params.seriesName];
+                return tipString;
+            },
+            textStyle: {
+                align: 'left'
+            }
+        },
+        legend: {
+            selectedMode: false,
+            x: "left",
+            y: "bottom",
+            formatter: function (params) {
+                return seriesText3[params];
+            }
+        },
+        xAxis: { type: 'category' },
+        yAxis: { min: 0 },
+        series: [
+            { type: "line" }
+        ],
+        grid: {
+            left: "60em",
+        },
+        dataset: {
+            dimensions: ['date', 'diagnosed'],
+            source: targetData
+        }
+    };
+    trendChart3.setOption(optionTC3);
+}
 
 // 当画面大小变化时对应改变各图表的尺寸。
 function resizeCharts() {
