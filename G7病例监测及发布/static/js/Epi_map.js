@@ -98,7 +98,7 @@ $("#changeMap").click(function () {
     if (choice == mapDataTotal) {
         choice = mapDataNow;
         $("#changeMap").html('切换累积确诊地图');
-        diagnosed='剩余确诊人数';
+        diagnosed='现存确诊人数';
 
     }
     else {

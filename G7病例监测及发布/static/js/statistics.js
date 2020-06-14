@@ -328,7 +328,6 @@ function calcTargetData() {
         dateData.totalCured = totalCured;
         dateData.totalDead = totalDead;
     }
-	console.log(totalAsymptomatic)
     // 更新数据展示页的四个数字数据
     $("#confirm").text(totalDiagnosed.toString());
     $("#import").text(totalImported.toString());
