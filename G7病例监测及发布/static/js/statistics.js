@@ -287,6 +287,7 @@ function calcTargetData() {
                         cured: 0,
                         dead: 0,
                         imported: 0,
+						asymptomatic: 0,
                     });
                     continue;
                 }
@@ -300,6 +301,7 @@ function calcTargetData() {
                         cured: dateData.cured,
                         dead: dateData.dead,
                         imported: dateData.imported,
+						asymptomatic: dateData.asymptomatic,
                     });
                 } else {
                     toModifiedData = targetData[dataPointer];
@@ -307,6 +309,7 @@ function calcTargetData() {
                     toModifiedData.cured += dateData.cured;
                     toModifiedData.dead += dateData.dead;
                     toModifiedData.imported += dateData.imported;
+                    toModifiedData.asymptomatic += dateData.asymptomatic;
                 }
                 dataPointer++;
             }
@@ -314,21 +317,24 @@ function calcTargetData() {
         }
     }
     // 计算目标地区累计确诊、死亡、治愈
-    var totalDiagnosed = 0, totalCured = 0, totalDead = 0, totalImported = 0;
+    var totalDiagnosed = 0, totalCured = 0, totalDead = 0, totalImported = 0, totalAsymptomatic = 0;
     for (dateData of targetData) {
         totalDiagnosed += dateData.diagnosed;
         totalCured += dateData.cured;
         totalDead += dateData.dead;
-        totalImported += dateData.imported
+        totalImported += dateData.imported;
+		totalAsymptomatic += dateData.asymptomatic;
         dateData.totalDiagnosed = totalDiagnosed;
         dateData.totalCured = totalCured;
         dateData.totalDead = totalDead;
     }
+	console.log(totalAsymptomatic)
     // 更新数据展示页的四个数字数据
     $("#confirm").text(totalDiagnosed.toString());
     $("#import").text(totalImported.toString());
     $("#mortality").text(totalDead.toString());
     $("#cure").text(totalCured.toString());
+    $("#asymptomatic").text(totalAsymptomatic.toString());
 
     var optionTC2 = {
     // 显示目标地区累计确诊、死亡、治愈趋势图
