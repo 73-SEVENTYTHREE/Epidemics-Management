@@ -387,7 +387,8 @@ function resizeCharts() {
         "width": $("#contrastWrapper").width()
     })
     contrast.resize();
-	if ($(window).width() >= 1183) {
+	console.log($("#mapdiv").width(), $(window).width())
+	if (window.matchMedia('(min-width: 992px)').matches) {
 		$("#Epi_map").css({
 			"height": 3 * $("#contrastWrapper").height(),
 		})
