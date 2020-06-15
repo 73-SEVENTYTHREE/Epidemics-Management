@@ -387,13 +387,13 @@ function resizeCharts() {
         "width": $("#contrastWrapper").width()
     })
     contrast.resize();
-	if ($(window).width() >= 975) {
+	if ($(window).width() >= 1183) {
 		$("#Epi_map").css({
 			"height": 3 * $("#contrastWrapper").height(),
 		})
 	} else {
 		$("#Epi_map").css({
-			"height": 0.75 * $(window).width(),
+			"height": 0.75 * $("#contrastWrapper").width(),
 		})
 	}
     ec_center.resize();

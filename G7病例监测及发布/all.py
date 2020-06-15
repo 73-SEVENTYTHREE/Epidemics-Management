@@ -15,7 +15,7 @@ def create_app(test_config=None):
 
     # 注册各子系统的蓝图
     import situation
-    app.register_blueprint(situation.situation_bp)
+    app.register_blueprint(situation.situation_bp, url_prefix='/situation')
 
     # 疫情数据子系统：初始化子系统的数据。
     situation.initSituation()
