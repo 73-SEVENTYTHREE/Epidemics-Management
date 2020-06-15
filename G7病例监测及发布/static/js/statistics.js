@@ -5,56 +5,6 @@ var trendChart2 = echarts.init(document.getElementById('trendTotal'));
 var trendChart3 = echarts.init(document.getElementById('trendDaily'));
 var contrast = echarts.init(document.getElementById('contrastGraph'));
 
-// 样例数据，等待同步后端的数据。
-// 注意：请确保传回数据中各省份日期序列相同且按时间顺序排列！！
-/*
-var data = [{
-    province: "浙江",
-    data: [{
-        date: "03-01", diagnosed: 100, imported: 10,
-        asymptomatic: 15, cured: 5, dead: 1
-    },
-    {
-        date: "03-02", diagnosed: 90, imported: 9,
-        asymptomatic: 20, cured: 10, dead: 2
-    },
-    {
-        date: "03-03", diagnosed: 80, imported: 2,
-        asymptomatic: 17, cured: 15, dead: 0
-    }]
-},
-{
-    province: "江苏",
-    data: [{
-        date: "03-01", diagnosed: 70, imported: 5,
-        asymptomatic: 12, cured: 13, dead: 1
-    },
-    {
-        date: "03-02", diagnosed: 30, imported: 6,
-        asymptomatic: 32, cured: 43, dead: 0
-    },
-    {
-        date: "03-03", diagnosed: 40, imported: 7,
-        asymptomatic: 14, cured: 24, dead: 1
-    }]
-},
-{
-    province: "湖北",
-    data: [{
-        date: "03-01", diagnosed: 70, imported: 6,
-        asymptomatic: 12, cured: 13, dead: 1
-    },
-    {
-        date: "03-02", diagnosed: 30, imported: 30,
-        asymptomatic: 32, cured: 43, dead: 0
-    },
-    {
-        date: "03-03", diagnosed: 40, imported: 1,
-        asymptomatic: 14, cured: 24, dead: 1
-    }]
-}
-];
-*/
 var data = [];
 var dates = [];
 

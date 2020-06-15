@@ -24,7 +24,7 @@
 					 <label for="Import">境外输入人数</label><input type="number" class="form-control" id="Import" name="Import" min="0" />
 				</div>
 				<div class="form-group">
-					 <label for="temp">无症感染人数</label><input type="number" class="form-control" id="Asymptomatic" name="Asymptomatic" min="0" />
+					 <label for="Asymptomatic">无症感染人数</label><input type="number" class="form-control" id="Asymptomatic" name="Asymptomatic" min="0" />
 				</div>
 				<div class="form-group">
 					 <label for="Cure">治愈人数</label><input type="number" class="form-control" id="Cure" name="Cure" min="0" />
@@ -38,6 +38,25 @@
 	</div>
 </div>
 <script>
+	// 根据数据库数据进行表单的自动填写
+	function autofill() {
+		console.log("autofill")
+		$.ajax({
+			url: "/situation/getdatedata/",
+			data: {
+				province: "{{session['province']}}",
+				date: $("#Date").val(),
+			},
+			success: function(data) {
+				$("#Confirm").val(data.confirm);
+				$("#Import").val(data.imported);
+				$("#Asymptomatic").val(data.asymptomatic);
+				$("#Cure").val(data.cured);
+				$("#Mortality").val(data.dead);
+            }
+		})
+	}
+	
 	// 时间设置的插件。时间设置使用了Bootstrap-datetimepicker。
 	$('#datepick input').datepicker({
 		format: "yyyy-mm-dd",
@@ -46,11 +65,31 @@
 		maxViewMode: 0,
 		todayBtn: "linked",
 		language: "zh-CN",
-		orientation: "bottom auto"
-	});
+		orientation: "bottom auto",
+		onSelect: autofill,
+	}).on('changeDate', autofill);
 	
+	// 获取今日日期
+    function getNowFormatDate() {
+      var date = new Date();
+      var seperator1 = "-";
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var strDate = date.getDate();
+      if (month >= 1 && month <= 9) {
+        month = "0" + month;
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+      }
+      var currentdate = year + seperator1 + month + seperator1 + strDate;
+      return currentdate;
+    }
+
 	// 在前端检查输入的有效性，若无效输入会进行提示。
 	$(document).ready(function (){
+		$("#Date").val(getNowFormatDate())
+		autofill()
 		jQuery.validator.addMethod('dateCheck', function() {
 			date = $("#Date").val();
 			today = new Date();
@@ -114,5 +153,6 @@
 			}
 		})
 	})
+	
 </script>
 {% endblock content %}
