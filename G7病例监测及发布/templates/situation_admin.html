@@ -40,7 +40,6 @@
 <script>
 	// 根据数据库数据进行表单的自动填写
 	function autofill() {
-		console.log("autofill")
 		$.ajax({
 			url: "/situation/getdatedata/",
 			data: {
@@ -153,6 +152,6 @@
 			}
 		})
 	})
-	
+
 </script>
 {% endblock content %}
