@@ -85,6 +85,13 @@ var ec_center_option = {
                 fontSize: 8,
             }
         },
+        tooltip: {
+            formatter: function (params) {
+				if (params.name != "南海诸岛") {
+					return params.seriesName + "<br>" + params.name + "：" + params.value
+				}
+            },
+        },
         data: [] //数据
     }]
 };
@@ -129,6 +136,9 @@ ec_center.on('datarangeselected', function(param) {
 
 //实现点击疫情地图上的省市板块就将对应数据加到趋势图中：
 ec_center.on('click', function (param) {
+	if (param['name'] == "南海诸岛") {
+		return
+	}
     $("#Region_Name").html("当前地区: "+param['name']);
     var region = param['name'];
     var found = 0;

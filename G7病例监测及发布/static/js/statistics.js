@@ -393,7 +393,7 @@ function resizeCharts() {
 		})
 	} else {
 		$("#Epi_map").css({
-			"height": 1.5 * $("#contrastWrapper").height(),
+			"height": 0.75 * $(window).width(),
 		})
 	}
     ec_center.resize();

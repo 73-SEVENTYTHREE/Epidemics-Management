@@ -39,25 +39,29 @@
 {
 	.DispalyLabel {
 		font-size: 2.5vw;
-		color: bisque;
+		color: darkred;
 		font-family: '华文细黑';
 	}
+	.DisplayNum {
+		font-size: 4vw;
+		font-weight: bold;
+		margin: 0 auto;
+	} 
 }
 
 @media (min-width: 992px)
 {
 	.DispalyLabel {
 		font-size: 1.5vw;
-		color: bisque;
+		color: darkred;
 		font-family: '华文细黑';
 	}
+	.DisplayNum {
+		font-size: 2.5vw;
+		font-weight: bold;
+		margin: 0 auto;
+	} 
 }
-.DisplayNum {
-    font-size: 30px;
-    color: black;
-    font-family: FZShuTi;
-
-} 
 
 .DisplayBox {
     border-bottom: blueviolet;
@@ -77,8 +81,7 @@
 }
 
 .region_div{
-    color: #33CCFF;
-    font-family:'华文细黑';
+    color: #AA4411;
     border: bisque;
     border-radius: 2rem;
     text-align: center;
@@ -97,6 +100,8 @@
     margin-bottom: 0;
     margin-left:-4px;
     margin-right: 0;
+	padding-left: 0;
+	padding-right: 0;
 }
 .list-group-horizontal .list-group-item:first-child {
     border-top-left-radius:12px;
@@ -105,6 +110,11 @@
 .list-group-horizontal .list-group-item:last-child {
     border-top-right-radius:12px;
     border-bottom-right-radius:12px;
+}
+
+.pagetitle {
+	font-size: 2em;
+	margin-bottom: 15px;
 }
 
 .shadow-sm{
