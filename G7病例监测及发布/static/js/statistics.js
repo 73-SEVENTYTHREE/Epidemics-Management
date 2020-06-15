@@ -387,13 +387,16 @@ function resizeCharts() {
         "width": $("#contrastWrapper").width()
     })
     contrast.resize();
-    $("#Epi_map").css({
-        "height": 3 * $("#contrastWrapper").height(),
-    })
+	if ($(window).width() >= 975) {
+		$("#Epi_map").css({
+			"height": 3 * $("#contrastWrapper").height(),
+		})
+	} else {
+		$("#Epi_map").css({
+			"height": 1.5 * $("#contrastWrapper").height(),
+		})
+	}
     ec_center.resize();
-        $("#Epi_map").css({
-        "height": 3 * $("#contrastWrapper").height(),
-    })
 }
 
 // 使图表大小进行自适应。

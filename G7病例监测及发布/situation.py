@@ -22,7 +22,6 @@ class alldata(object):
 @bp.route('/admin/', methods = ['GET', 'POST'])
 def admin():
     if request.method == 'POST':
-        print(request.form)
         if not request.form['Date']  or not request.form['Cure'] or \
            not request.form['Confirm'] or not request.form['Import'] or \
            not request.form['Asymptomatic'] or not request.form['Mortality']:
@@ -64,8 +63,16 @@ def admin():
                   request.form['Date'], # 注意格式！
                   session.get("province"))
         (db, cursor) = _connsql()
-        sql = "UPDATE records SET Cure=%s, Confirm=%s, Import=%s, \
+        sql = "SELECT Cure, Confirm, Import, Asymptomatic, Mortality \
+FROM records where Region=%s and Date=%s"
+        cursor.execute(sql, (session.get("province"), request.form['Date']))
+        results = cursor.fetchall()
+        if results:
+            sql = "UPDATE records SET Cure=%s, Confirm=%s, Import=%s, \
 Asymptomatic=%s, Mortality=%s WHERE Date=%s and Region=%s"
+        else:
+            sql = "INSERT INTO records (Cure, Confirm, Import, \
+Asymptomatic, Mortality, Date, Region) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         try: #先尝试是否能更新数据库，如果不能就不更新我们的数据object了。
             cursor.execute(sql, record)
             db.commit()
@@ -75,6 +82,7 @@ Asymptomatic=%s, Mortality=%s WHERE Date=%s and Region=%s"
                     flag = 1
                     for j in i['data']:
                         if j['date'] == request.form['Date'][-5:]:
+                            print(j['date'], request.form['Date'][-5:])
                             # 更新内容
                             j['asymptomatic'] = int(request.form['Asymptomatic'])
                             j['cured'] = int(request.form['Cure'])
@@ -83,7 +91,7 @@ Asymptomatic=%s, Mortality=%s WHERE Date=%s and Region=%s"
                             j['imported'] = int(request.form['Import'])
                             flag = 0
                             break
-                    if not flag:
+                    if flag:
                         # 插入内容
                         i['data'].append({
                             'asymptomatic': int(request.form['Asymptomatic']),
@@ -92,8 +100,11 @@ Asymptomatic=%s, Mortality=%s WHERE Date=%s and Region=%s"
                             'dead': int(request.form['Mortality']),
                             'diagnosed': int(request.form['Confirm']),
                             'imported': int(request.form['Import'])})
-                    sorted(i['data'], key=lambda x: x['date'])
+                    i['data'] = sorted(i['data'], key=lambda x: x['date'])
                     break
+            if not request.form['Date'][-5:] in datadateset:
+                datadateset.append(request.form['Date'][-5:])
+                datadateset.sort()
             flash('数据更新成功！')
             return redirect(url_for('situation.index'))
         except:
@@ -133,7 +144,6 @@ FROM records where Region=%s and Date=%s"
     result = cursor.fetchone()
     cursor.close()
     db.close()
-    print(result)
     if result:
         data = {"cured" : result[0],
                 "confirm" : result[1],
@@ -154,7 +164,8 @@ def initSituation():
         # 打开数据库连接
         (db, cursor) = _connsql()
         # SQL 查询语句
-        sql = "SELECT * FROM records ORDER BY Region, Date"
+        sql = "SELECT Region, Date, Cure, Confirm, Import, Asymptomatic, Mortality \
+FROM records ORDER BY Region, Date"
         provinceset = [] # 查询时需要返回的数据
         datadateset = [] # 所有的日期，按顺序排列
         # 执行SQL语句
@@ -172,11 +183,11 @@ def initSituation():
             if result[1].strftime('%m-%d') not in datadateset:
                 datadateset.append(result[1].strftime('%m-%d'))
             tempdata[result[0]].append({'date': result[1].strftime('%m-%d'),
-                                        'diagnosed': result[2],
-                                        'cured': result[3],
-                                        'dead': result[4],
-                                        'imported': result[5],
-                                        'asymptomatic': result[6]})
+                                        'diagnosed': result[3],
+                                        'cured': result[2],
+                                        'dead': result[6],
+                                        'imported': result[4],
+                                        'asymptomatic': result[5]})
         # 将这些数据转换成所需要的格式
         for province in tempdata:
             provinceset.append({'province': province,
