@@ -1,4 +1,4 @@
-# 疫情数据子系统的文件。主入口在all.py。
+# 疫情数据子系统的文件。
 
 from flask import Flask, request, flash, url_for, \
      redirect, render_template, session, jsonify
@@ -9,9 +9,9 @@ import traceback
 import datetime
 
 # 为了尽可能减少部署时因服务器文件系统环境导致翻车，因此用如下写法
-app = Flask(__name__.split('.')[0])
+# app = Flask(__name__.split('.')[0])
 # 为了方便整合，我们的内容用一个Blueprint封装。
-bp = Blueprint('situation', __name__, url_prefix='/situation')
+situation_bp = Blueprint('situation', __name__)
 
 #每日记录的类
 class alldata(object):
@@ -19,7 +19,7 @@ class alldata(object):
         self.ver = {}
 
 # 管理员更新数据界面，完整路由为"/situation/admin/"
-@bp.route('/admin/', methods = ['GET', 'POST'])
+@situation_bp.route('/admin/', methods = ['GET', 'POST'])
 def admin():
     if request.method == 'POST':
         if not request.form['Date']  or not request.form['Cure'] or \
@@ -124,18 +124,18 @@ Asymptomatic, Mortality, Date, Region) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         return render_template('situation_admin.html')
 
 #数据展示界面，完整路由为"/situation/"
-@bp.route('/')
+@situation_bp.route('/')
 def index():
     return render_template('situation_datapage.html')
 
 #向前端发送json数据
-@bp.route('/epidata/',methods=['GET']) # 这里是GET啊！GET！
+@situation_bp.route('/epidata/',methods=['GET']) # 这里是GET啊！GET！
 #这里原来是uplord，但是在用户的视角应当是获取数据，因此修改路由。
 def upload():
     return jsonify({'provinceset': provinceset,
                     'dates': datadateset})
 
-@bp.route('/getdatedata/', methods=['GET'])
+@situation_bp.route('/getdatedata/', methods=['GET'])
 def getdatedata():
     (db, cursor) = _connsql()
     sql = "SELECT Cure, Confirm, Import, Asymptomatic, Mortality \
