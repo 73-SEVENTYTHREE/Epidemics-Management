@@ -58,7 +58,25 @@
     <!-- <div class="row" > -->
         {% block content %}{% endblock %}
     <!-- </div> -->
-
+	{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+			<div style="position: fixed; top: 50%; left: 50%" id="flashes">
+				{% for category, message in messages %}
+				    {% if loop.last %}
+						<div style="background-color:{{'#FF4444' if category == 'error' else '#4444FF'}}">{{ message }}</div>
+				    {% endif %}
+				{% endfor %}
+				
+			</div>
+			<script>
+				$(document).ready(function(){
+					var box=$("#flashes");
+					box.animate({opacity:'1'},"slow");
+					box.animate({opacity:'0'},"slow");
+				})
+			</script>
+		{% endif %}
+	{% endwith %}
 
 </body>
 

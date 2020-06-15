@@ -6,6 +6,7 @@ from flask import Blueprint
 import json
 import pymysql
 import traceback
+import datetime
 
 # 为了尽可能减少部署时因服务器文件系统环境导致翻车，因此用如下写法
 app = Flask(__name__.split('.')[0])
@@ -21,34 +22,90 @@ class alldata(object):
 @bp.route('/admin/', methods = ['GET', 'POST'])
 def admin():
     if request.method == 'POST':
-        if not request.form['Date']  or not request.form['Cure'] or not request.form['Confirm'] or not request.form['Import'] or not request.form['Asymptomatic'] or not request.form['Mortality']:
+        print(request.form)
+        if not request.form['Date']  or not request.form['Cure'] or \
+           not request.form['Confirm'] or not request.form['Import'] or \
+           not request.form['Asymptomatic'] or not request.form['Mortality']:
             flash('请填写全部字段', 'error')
-        elif not isinstance(request.form['Cure'],int) or not isinstance(request.form['Confirm'],int) or not isinstance(request.form['Import'],int) or not isinstance(request.form['Asymptomatic'],int) or not isinstance(request.form['Mortality'],int):
-            flash('请输入正确的值','error')
-        elif request.form['Cure']<0 or request.form['Confirm']<0 or request.form['Import']<0 or request.form['Asymptomatic']<0 or request.form['Mortality']<0:
-            flash('请输入正确的值','error')
-        else:
-            if not session.get("province") or session.get("identity") != 2:
-                flash('管理员验证失败，请重新登录','error')
-                pass # TODO：跳转到用户管理子系统的管理员登录页面
-            #此处要调用用户管理子系统的session获取省份
-            record = Record(session.get("province"), request.form['Date'], request.form['Cure'],request.form['Confirm'],
-                            request.form['Import'], request.form['Asymptomatic'], request.form['Mortality'])
-            #更新返回前端的数据
-            for pro in provinceset:
-                if pro['province'] == record.Region:
-                    dic = {}
-                    dic = {'date':record.Date,'diagnosed':record.Confirm,'imported':record.Import,'asymptomatic':record.Asymptomatic,'cured':record.Cure,'dead':record.Mortality}
-                    pro['data'].append(dic)  
-            #更新数据库
-            _db.session.add(record)
-            _db.session.commit()
-            
-            flash('Record was successfully added')
-            return redirect(url_for('data page.html'))
+            return render_template('admin.html')
+        if not request.form['Cure'].isnumeric() or not \
+             request.form['Confirm'].isnumeric() or not \
+             request.form['Import'].isnumeric() or not \
+             request.form['Asymptomatic'].isnumeric() or not \
+             request.form['Mortality'].isnumeric():
+            flash('请输入正确的数值','error')
+            return render_template('admin.html')
+        if int(request.form['Cure'])<0 or \
+           int(request.form['Confirm'])<0 or \
+           int(request.form['Import'])<0 or \
+           int(request.form['Asymptomatic'])<0 or \
+           int(request.form['Mortality'])<0:
+            flash('请输入正确的数值','error')
+            return render_template('admin.html')
+        try:
+            mydate = datetime.date(*map(int, request.form['Date'].split('-')))
+        except:
+            flash('请输入正确的日期','error')
+            traceback.print_exc()
+            return render_template('admin.html')
+        if mydate < datetime.date(2020, 1, 1) or\
+           mydate > datetime.date.today():
+            flash('请输入正确的日期','error')
+        if not session.get("province") or session.get("identity") != 2:
+            flash('管理员验证失败，请重新登录','error')
+            # 跳转到用户管理子系统的管理员登录页面
+            #return redirect(url_for('framework.a'))
+        #此处要调用用户管理子系统的session获取省份
+        record = (request.form['Cure'],
+                  request.form['Confirm'],
+                  request.form['Import'],
+                  request.form['Asymptomatic'],
+                  request.form['Mortality'],
+                  request.form['Date'], # 注意格式！
+                  session.get("province"))
+        (db, cursor) = _connsql()
+        sql = "UPDATE records SET Cure=%s, Confirm=%s, Import=%s, \
+Asymptomatic=%s, Mortality=%s WHERE Date=%s and Region=%s"
+        try: #先尝试是否能更新数据库，如果不能就不更新我们的数据object了。
+            cursor.execute(sql, record)
+            db.commit()
+            # 更新我们的provinceset
+            for i in provinceset:
+                if i['province'] == session.get("province"):
+                    flag = 1
+                    for j in i['data']:
+                        if j['date'] == request.form['Date'][-5:]:
+                            # 更新内容
+                            j['asymptomatic'] = int(request.form['Asymptomatic'])
+                            j['cured'] = int(request.form['Cure'])
+                            j['dead'] = int(request.form['Mortality'])
+                            j['diagnosed'] = int(request.form['Confirm'])
+                            j['imported'] = int(request.form['Import'])
+                            flag = 0
+                            break
+                    if not flag:
+                        # 插入内容
+                        i['data'].append({
+                            'asymptomatic': int(request.form['Asymptomatic']),
+                            'cured': int(request.form['Cure']),
+                            'date': request.form['Date'][-5:],
+                            'dead': int(request.form['Mortality']),
+                            'diagnosed': int(request.form['Confirm']),
+                            'imported': int(request.form['Import'])})
+                    sorted(i['data'], key=lambda x: x['date'])
+                    break
+            flash('数据更新成功！')
+            return redirect(url_for('sit.index'))
+        except:
+            traceback.print_exc()
+            db.rollback()
+            flash('数据更新失败', 'error')
+            return render_template('admin.html')
     else:
         if session.get("identity") != 2: # 非我们系统的管理员
-            pass # TODO：跳转到用户管理子系统的管理员登录页面
+            flash('管理员验证失败，请重新登录','error')
+            # 跳转到用户管理子系统的管理员登录页面
+            #return redirect(url_for('framework.a'))
         return render_template('admin.html')
 
 #数据展示界面，完整路由为"/situation/"
@@ -56,6 +113,7 @@ def admin():
 def index():
     session['name'] = "杨凌霄"
     session['province'] = '浙江'
+    session['identity'] = 2
     return render_template('data page.html')
 
 #向前端发送json数据
@@ -102,6 +160,7 @@ def initSituation():
         # 执行SQL语句
         cursor.execute(sql)
         results = cursor.fetchall() # 不要一个一个拿，会有问题的
+        # 关闭数据库连接
         cursor.close()
         db.close()
         # print(results)
@@ -125,8 +184,7 @@ def initSituation():
         datadateset.sort()
     except Exception as ex:
         traceback.print_exc()
-        # 关闭数据库连接
-
+        
 def _connsql():
     # 所有连接sql的操作都封装这里
     db = pymysql.connect(host="120.55.44.111",
