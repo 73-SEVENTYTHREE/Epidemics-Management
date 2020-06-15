@@ -109,10 +109,10 @@ $(document).ready(function (){
 					text: '全国治愈率、死亡率趋势图'
 				},
 				tooltip: {
+					trigger: 'axis',
 					formatter: function (params) {
-						tipString = "日期：" + params.data.date + "<br>";
-						tipString = tipString + seriesText1[params.seriesName] + "：";
-						tipString = tipString + params.data[params.seriesName] + "%";
+						tipString = "日期：" + params[0].data.date;
+						tipString = tipString + "<br>治愈率：" + params[0].data.curedRate + "%<br>死亡率：" + params[0].data.deadRate + "%";
 						return tipString;
 					},
 					textStyle: {
@@ -291,10 +291,10 @@ function calcTargetData() {
             text: '累计确诊、死亡、治愈趋势图'
         },
         tooltip: {
+			trigger: 'axis',
             formatter: function (params) {
-                tipString = "日期：" + params.data.date + "<br>";
-                tipString = tipString + seriesText2[params.seriesName] + "：";
-                tipString = tipString + params.data[params.seriesName];
+                tipString = "日期：" + params[0].data.date;
+                tipString = tipString + "<br>累计确诊：" + params[0].data.totalDiagnosed + "<br>累计死亡：" + params[0].data.totalDead + "<br>累计治愈：" + params[0].data.totalCured;
                 return tipString;
             },
             textStyle: {
@@ -331,10 +331,10 @@ function calcTargetData() {
             text: '每日新增确诊趋势图'
         },
         tooltip: {
+			trigger: 'axis',
             formatter: function (params) {
-                tipString = "日期：" + params.data.date + "<br>";
-                tipString = tipString + seriesText3[params.seriesName] + "：";
-                tipString = tipString + params.data[params.seriesName];
+                tipString = "日期：" + params[0].data.date;
+                tipString = tipString + "<br>人数：" + params[0].data.diagnosed;
                 return tipString;
             },
             textStyle: {
