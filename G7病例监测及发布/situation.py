@@ -33,20 +33,20 @@ def admin():
              request.form['Asymptomatic'].isnumeric() or not \
              request.form['Mortality'].isnumeric():
             flash('请输入正确的数值','error')
-            return render_template('admin.html')
+            return render_template('situation_admin.html')
         if int(request.form['Cure'])<0 or \
            int(request.form['Confirm'])<0 or \
            int(request.form['Import'])<0 or \
            int(request.form['Asymptomatic'])<0 or \
            int(request.form['Mortality'])<0:
             flash('请输入正确的数值','error')
-            return render_template('admin.html')
+            return render_template('situation_admin.html')
         try:
             mydate = datetime.date(*map(int, request.form['Date'].split('-')))
         except:
             flash('请输入正确的日期','error')
             traceback.print_exc()
-            return render_template('admin.html')
+            return render_template('situation_admin.html')
         if mydate < datetime.date(2020, 1, 1) or\
            mydate > datetime.date.today():
             flash('请输入正确的日期','error')
@@ -76,6 +76,8 @@ Asymptomatic, Mortality, Date, Region) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         try: #先尝试是否能更新数据库，如果不能就不更新我们的数据object了。
             cursor.execute(sql, record)
             db.commit()
+            cursor.close()
+            db.close()
             # 更新我们的provinceset
             for i in provinceset:
                 if i['province'] == session.get("province"):
@@ -110,22 +112,21 @@ Asymptomatic, Mortality, Date, Region) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         except:
             traceback.print_exc()
             db.rollback()
+            cursor.close()
+            db.close()
             flash('数据更新失败', 'error')
-            return render_template('admin.html')
+            return render_template('situation_admin.html')
     else:
         if session.get("identity") != 2: # 非我们系统的管理员
             flash('管理员验证失败，请重新登录','error')
             # 跳转到用户管理子系统的管理员登录页面
             #return redirect(url_for('framework.a'))
-        return render_template('admin.html')
+        return render_template('situation_admin.html')
 
 #数据展示界面，完整路由为"/situation/"
 @bp.route('/')
 def index():
-    session['name'] = "杨凌霄"
-    session['province'] = '浙江'
-    session['identity'] = 2
-    return render_template('data page.html')
+    return render_template('situation_datapage.html')
 
 #向前端发送json数据
 @bp.route('/epidata/',methods=['GET']) # 这里是GET啊！GET！

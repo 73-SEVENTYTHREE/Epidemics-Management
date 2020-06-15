@@ -1,0 +1,158 @@
+{% extends "framework.html" %}
+{% block content %}
+<!-- This part is the body of the website. Just simply replace the follwoing comments with your own codes. Attentnion: no <body> </body> part is needed-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker3.min.css') }}">
+<script src="{{ url_for('static', filename='js/bootstrap-datepicker.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-datepicker.zh-CN.min.js') }}" charset=utf-8></script>
+<script src="{{ url_for('static', filename='js/jquery.validate.min.js') }}"></script>
+<div class="container">
+	<div class="row clearfix">
+
+		<div class="col-md-12 column">
+			<div style="height: 80px">&nbsp;</div> <!--防止因为header修改导致的整体偏移-->
+			<div class="alert alert-info">欢迎登陆后台，{{session["province"]}}省的管理员{{session['name']}}！</div>
+			<!--后端请将管理员的省份传到g.province!!!!!-->
+			<form role="form" method="post" id="adminForm">
+				<div class="input-append date form-group" id="datepick" data-date-format="dd-mm-yyyy">
+					<label for="Date">日期</label>
+					<input name="Date" id="Date" class="form-control" type="text" data-provide="datepicker">
+				</div>    
+				<div class="form-group">
+					 <label for="Confirm">确诊人数</label><input type="number" class="form-control" id="Confirm" name="Confirm" min="0" />
+				</div>
+				<div class="form-group">
+					 <label for="Import">境外输入人数</label><input type="number" class="form-control" id="Import" name="Import" min="0" />
+				</div>
+				<div class="form-group">
+					 <label for="Asymptomatic">无症感染人数</label><input type="number" class="form-control" id="Asymptomatic" name="Asymptomatic" min="0" />
+				</div>
+				<div class="form-group">
+					 <label for="Cure">治愈人数</label><input type="number" class="form-control" id="Cure" name="Cure" min="0" />
+				</div>
+				<div class="form-group">
+					 <label for="Mortality">死亡人数</label><input type="number" class="form-control" id="Mortality" name="Mortality" min="0" />
+				</div>
+				<button type="submit" class="btn btn-default">提交数据</button>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+	// 根据数据库数据进行表单的自动填写
+	function autofill() {
+		console.log("autofill")
+		$.ajax({
+			url: "/situation/getdatedata/",
+			data: {
+				province: "{{session['province']}}",
+				date: $("#Date").val(),
+			},
+			success: function(data) {
+				$("#Confirm").val(data.confirm);
+				$("#Import").val(data.imported);
+				$("#Asymptomatic").val(data.asymptomatic);
+				$("#Cure").val(data.cured);
+				$("#Mortality").val(data.dead);
+            }
+		})
+	}
+	
+	// 时间设置的插件。时间设置使用了Bootstrap-datetimepicker。
+	$('#datepick input').datepicker({
+		format: "yyyy-mm-dd",
+		startDate: "2020-01-01",
+		endDate: "+0d",
+		maxViewMode: 0,
+		todayBtn: "linked",
+		language: "zh-CN",
+		orientation: "bottom auto",
+		onSelect: autofill,
+	}).on('changeDate', autofill);
+	
+	// 获取今日日期
+    function getNowFormatDate() {
+      var date = new Date();
+      var seperator1 = "-";
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var strDate = date.getDate();
+      if (month >= 1 && month <= 9) {
+        month = "0" + month;
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+      }
+      var currentdate = year + seperator1 + month + seperator1 + strDate;
+      return currentdate;
+    }
+
+	// 在前端检查输入的有效性，若无效输入会进行提示。
+	$(document).ready(function (){
+		$("#Date").val(getNowFormatDate())
+		autofill()
+		jQuery.validator.addMethod('dateCheck', function() {
+			date = $("#Date").val();
+			today = new Date();
+			return (Date.parse(date) < today.getTime());
+		})
+		
+		$("#adminForm").validate({
+			rules: {
+				Date: {
+					required: true,
+					dateISO: true,
+					dateCheck: true,
+				},
+				Confirm: {
+					required: true,
+					number: true,
+					min: 0,
+				},
+				Import: {
+					required: true,
+					number: true,
+					min: 0,
+				},
+				Cure: {
+					required: true,
+					number: true,
+					min: 0,
+				},
+				Mortality: {
+					required: true,
+					number: true,
+					min: 0,
+				},
+			},
+			messages: {
+				Date: {
+					required: "请输入日期",
+					dateISO: "请输入正确的日期格式",
+					dateCheck: "请输入有效的日期",
+				},
+				Confirm: {
+					required: "请输入确诊人数",
+					number: "请输入数字",
+					min: "请输入有效的数字",
+				},
+				Import: {
+					required: "请输入境外输入人数",
+					number: "请输入数字",
+					min: "请输入有效的数字",
+				},
+				Cure: {
+					required: "请输入治愈人数",
+					number: "请输入数字",
+					min: "请输入有效的数字",
+				},
+				Mortality: {
+					required: "请输入死亡人数",
+					number: "请输入数字",
+					min: "请输入有效的数字",
+				},
+			}
+		})
+	})
+	
+</script>
+{% endblock content %}
