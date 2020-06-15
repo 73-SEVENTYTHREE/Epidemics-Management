@@ -14,11 +14,11 @@ def create_app(test_config=None):
         pass
 
     # 注册各子系统的蓝图
-    import sit
-    app.register_blueprint(sit.bp)
+    import situation
+    app.register_blueprint(situation.bp)
 
     # 疫情数据子系统：初始化子系统的数据。
-    sit.initSituation()
+    situation.initSituation()
 
     return app
 

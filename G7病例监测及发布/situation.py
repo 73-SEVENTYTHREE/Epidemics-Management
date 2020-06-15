@@ -11,7 +11,7 @@ import datetime
 # 为了尽可能减少部署时因服务器文件系统环境导致翻车，因此用如下写法
 app = Flask(__name__.split('.')[0])
 # 为了方便整合，我们的内容用一个Blueprint封装。
-bp = Blueprint('sit', __name__, url_prefix='/situation')
+bp = Blueprint('situation', __name__, url_prefix='/situation')
 
 #每日记录的类
 class alldata(object):
@@ -95,7 +95,7 @@ Asymptomatic=%s, Mortality=%s WHERE Date=%s and Region=%s"
                     sorted(i['data'], key=lambda x: x['date'])
                     break
             flash('数据更新成功！')
-            return redirect(url_for('sit.index'))
+            return redirect(url_for('situation.index'))
         except:
             traceback.print_exc()
             db.rollback()
